@@ -13,6 +13,7 @@ import {
   Search,
   Users,
   Briefcase,
+  MessageSquare,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -44,6 +45,16 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
         { title: "Student Profiles & Network", desc: "Connect with classmates, batchmates & alumni", code: "NETWORK", url: "/profile?tab=network" },
         { title: "Achievement Stream", desc: "Hackathon wins, job offers & research milestones", code: "FEED", url: "/profile" },
         { title: "Internship & Job Status", desc: "Open-to-work candidate directory & target roles", code: "CAREERS", url: "/profile" },
+      ],
+    },
+    {
+      name: "MESSAGES",
+      href: "/messages",
+      badge: "3 New",
+      submenu: [
+        { title: "Campus Direct Messages", desc: "Chat with batchmates, mentors & project squads", code: "CHAT", url: "/messages" },
+        { title: "DevCom Core Channel", desc: "Developers Community KGEC engineering stream", code: "DEVCOM", url: "/messages?user=group-devcom" },
+        { title: "SIH & Hackathon Collabs", desc: "Team chat & proposal discussions", code: "HACKS", url: "/messages?user=priya-sharma" },
       ],
     },
     {
@@ -176,7 +187,18 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
         </div>
 
         {/* Right CTA */}
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-2.5">
+          <Link
+            href="/messages"
+            className="relative p-2.5 border border-slate-300 hover:border-red-600 bg-white hover:bg-slate-50 text-slate-700 hover:text-red-600 rounded-xl transition-all shadow-2xs cursor-pointer group"
+            title="Campus Direct Messages (3 unread)"
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center shadow-xs">
+              3
+            </span>
+          </Link>
+
           <Link
             href="/profile"
             className="flex items-center gap-2 px-3.5 py-2 border border-slate-300 hover:border-red-600 bg-white hover:bg-slate-50 text-slate-800 hover:text-red-600 text-xs font-semibold tracking-wide rounded-xl transition-all shadow-2xs cursor-pointer group"
@@ -198,7 +220,15 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
         </div>
 
         {/* Mobile Hamburger Button */}
-        <div className="flex lg:hidden items-center gap-2.5">
+        <div className="flex lg:hidden items-center gap-2">
+          <Link
+            href="/messages"
+            className="relative p-2 bg-slate-100 text-slate-800 text-xs font-bold rounded-lg flex items-center gap-1 border border-slate-200"
+            title="Messages"
+          >
+            <MessageSquare className="w-3.5 h-3.5 text-red-600" />
+            <span className="w-2 h-2 bg-red-600 rounded-full"></span>
+          </Link>
           <Link
             href="/profile"
             className="px-2.5 py-1.5 bg-slate-100 text-slate-800 text-xs font-bold rounded-lg flex items-center gap-1 border border-slate-200"
@@ -252,6 +282,15 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
           </div>
 
           <div className="pt-2 space-y-2">
+            <Link
+              href="/messages"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full py-2.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2 rounded-lg border border-red-200"
+            >
+              <MessageSquare className="w-4 h-4 text-red-600" />
+              <span>CAMPUS MESSENGER & CHAT (3 NEW)</span>
+            </Link>
+
             <Link
               href="/profile"
               onClick={() => setMobileMenuOpen(false)}
