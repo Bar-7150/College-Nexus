@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   ArrowRight,
   Shield,
@@ -10,6 +11,7 @@ import {
   CheckCircle2,
   Terminal,
   Sparkles,
+  Users,
 } from "lucide-react";
 import RedUnderline from "./RedUnderline";
 import RedStar from "./RedStar";
@@ -89,33 +91,50 @@ export default function Hero({ onOpenLoginModal }: HeroProps) {
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-4 mb-10">
+            <div className="flex flex-wrap items-center gap-3.5 mb-10">
+              <Link
+                href="/profile"
+                className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs tracking-wider uppercase rounded-xl shadow-sm hover:shadow transition-all duration-200 cursor-pointer"
+              >
+                <Users className="w-4 h-4" />
+                <span>STUDENT NETWORK & PROFILES</span>
+              </Link>
+
               <a
                 href="#vault"
-                className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs tracking-wider uppercase rounded-lg shadow-sm hover:shadow transition-all duration-200"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 font-semibold text-xs tracking-wider uppercase rounded-xl transition-all duration-200 shadow-2xs"
               >
-                <span>EXPLORE THE VAULT</span>
+                <span>EXPLORE VAULT</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
 
               <a
                 href="#board"
-                className="inline-flex items-center gap-2 px-6 py-3.5 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 font-semibold text-xs tracking-wider uppercase rounded-lg transition-all duration-200 shadow-2xs"
+                className="inline-flex items-center gap-2 px-4 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs tracking-wider uppercase rounded-xl transition-all duration-200"
               >
-                <span>CAMPUS NOTICES FEED</span>
+                <span>NOTICES</span>
               </a>
 
               <button
                 onClick={onOpenLoginModal}
-                className="px-4 py-3.5 text-xs text-slate-500 hover:text-red-600 font-semibold tracking-wider uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3 py-3.5 text-xs text-slate-500 hover:text-red-600 font-semibold tracking-wider uppercase flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Lock className="w-3.5 h-3.5" />
-                <span>Roll Auth Demo</span>
+                <span>Roll Auth</span>
               </button>
             </div>
 
             {/* Micro Highlights */}
-            <div className="pt-6 border-t border-slate-200 grid grid-cols-3 gap-4">
+            <div className="pt-6 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div>
+                <span className="text-[11px] font-bold text-red-600 uppercase font-mono block">
+                  Student Network
+                </span>
+                <span className="text-xs font-semibold text-slate-900 block mt-0.5">
+                  LinkedIn-Style Hub
+                </span>
+                <span className="text-[11px] text-slate-500">Peer connections &amp; jobs</span>
+              </div>
               <div>
                 <span className="text-[11px] font-bold text-red-600 uppercase font-mono block">
                   Campus Vault
@@ -167,9 +186,33 @@ export default function Hero({ onOpenLoginModal }: HeroProps) {
                 </h3>
                 <RedUnderline className="absolute -bottom-1 left-0" />
               </div>
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
                 Here&apos;s your campus overview &amp; academic pulse.
               </p>
+
+              {/* Student Network Teaser */}
+              <Link
+                href="/profile"
+                className="p-3 bg-slate-50 border border-slate-200/90 rounded-xl flex items-center justify-between hover:bg-red-50/50 hover:border-red-200 transition-colors group cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                    AS
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900 group-hover:text-red-600">
+                      Arjun Sen (3rd Year CSE)
+                    </div>
+                    <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>#Open_To_Work · 486 Connections</span>
+                    </div>
+                  </div>
+                </div>
+                <span className="text-xs font-semibold text-red-600 group-hover:translate-x-0.5 transition-transform">
+                  View Profile &rarr;
+                </span>
+              </Link>
             </div>
 
             {/* Card 2: "✦ Academic Pulse" Card */}
