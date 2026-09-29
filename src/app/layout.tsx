@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Zilla_Slab } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,23 +8,25 @@ const inter = Inter({
   display: "swap",
 });
 
-const zillaSlab = Zilla_Slab({
-  variable: "--font-zilla",
-  weight: ["400", "500", "600", "700"],
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
   display: "swap",
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
-  title: "College Nexus | One Campus. One Network. Zero Fragmentation.",
+  title: "College Nexus | KGEC Collegiate Intranet & Academic Portal",
   description:
-    "An authenticated collegiate intranet progressive web app for Kalyani Government Engineering College (KGEC). Centralized academic vault, verified lost-and-found recovery, student marketplace, and departmental circulars.",
+    "The official, authenticated digital intranet for Kalyani Government Engineering College. Seamlessly integrating the verified Academic Vault, The Board notices, private Lost & Found recovery, and student peer marketplace.",
   keywords: [
     "College Nexus",
     "KGEC",
-    "Campus Vault",
+    "Kalyani Government Engineering College",
+    "Academic Vault",
     "PYQ",
-    "Engineering",
+    "Engineering Notes",
     "Lost and Found",
     "Student Marketplace",
   ],
@@ -47,9 +49,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${zillaSlab.variable} scroll-smooth`}
+      className={`${inter.variable} ${playfair.variable} scroll-smooth`}
     >
-      <body className="min-h-screen flex flex-col font-sans bg-[#fbf9f5] text-[#1a1a1a] antialiased selection:bg-[#b93a32] selection:text-white">
+      <body className="min-h-screen flex flex-col font-sans bg-[#f7f5ef] text-[#16211a] antialiased selection:bg-[#c79e4d] selection:text-[#0b1510]">
         {children}
       </body>
     </html>

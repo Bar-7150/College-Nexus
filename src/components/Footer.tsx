@@ -1,81 +1,93 @@
 "use client";
 
 import React from "react";
-import { Heart, Globe, ShieldCheck, ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+import { ShieldCheck, ArrowUpRight, Heart, Globe } from "lucide-react";
 import { InstagramIcon, LinkedinIcon, GithubIcon } from "@/components/SocialIcons";
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-400 pt-20 pb-12 border-t border-slate-800 relative z-20">
+    <footer className="bg-[#08110c] text-[#93a69a] pt-20 pb-12 border-t border-[#16271e] relative z-20">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12">
         
         {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-slate-800">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-[#16271e]">
           
           {/* Brand Column */}
           <div className="lg:col-span-4 flex flex-col items-start">
-            <a href="#home" className="flex items-center gap-3 mb-4 group">
-              <div className="w-10 h-10 rounded-lg bg-red-600 text-white flex items-center justify-center font-bold text-lg shadow-sm group-hover:bg-red-700 transition-colors">
-                <span>結</span>
+            <Link href="/" className="flex items-center gap-3 mb-5 group">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#dfc285] to-[#9e7529] p-[1px] shadow-sm">
+                <div className="w-full h-full bg-[#0b1510] rounded-[11px] flex items-center justify-center">
+                  <span className="text-base font-serif font-bold text-[#deb86d]">結</span>
+                </div>
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] tracking-[0.2em] text-slate-400 font-bold uppercase leading-tight">
-                  COLLEGE
+                <span className="text-[9px] tracking-[0.25em] text-[#c79e4d] font-semibold uppercase leading-tight font-mono">
+                  COLLEGIATE INTRANET
                 </span>
-                <span className="text-xl font-heading font-bold tracking-tight text-white leading-tight">
-                  NEXUS
+                <span className="text-xl font-serif font-bold tracking-wide text-white leading-tight">
+                  COLLEGE NEXUS
                 </span>
               </div>
-            </a>
+            </Link>
 
-            <p className="text-xs text-slate-400 leading-relaxed max-w-sm mb-6">
-              One Campus. One Network. Zero Fragmentation. Unifying the engineering collegiate experience into a single high-speed intranet hub tailored for Kalyani Government Engineering College.
+            <p className="text-xs text-[#8a9f92] leading-relaxed max-w-sm mb-6 font-light">
+              One Campus. One Network. Zero Fragmentation. Unifying the engineering collegiate experience into a single high-velocity, roll-verified digital sanctuary for Kalyani Government Engineering College.
             </p>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800/80 border border-slate-700 text-xs font-mono text-slate-300 rounded-lg">
-              <ShieldCheck className="w-3.5 h-3.5 text-red-500" />
-              <span>KGEC INTRANET AUTHENTICATED</span>
+            <div className="p-3 bg-[#0d1a13] border border-[#1b3425] rounded-xl text-xs font-mono text-[#a4b8ab] space-y-1 mb-6">
+              <div className="flex items-center gap-2 text-[#deb86d] font-semibold">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>KGEC AUTONOMOUS CAMPUS</span>
+              </div>
+              <p className="text-[11px] text-[#71887a]">
+                Kalyani, Nadia, West Bengal 741235 · PIN 741235
+              </p>
+            </div>
+
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#102017] border border-[#1e3b2b] rounded-full text-[11px] font-mono text-emerald-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>All Campus Systems Operational · 99.98% Uptime</span>
             </div>
           </div>
 
           {/* Navigation Links Columns */}
           <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-8">
             
-            {/* Column 1: Ecosystem Modules */}
+            {/* Column 1: Core Modules */}
             <div>
-              <h4 className="text-xs text-white font-bold tracking-wider uppercase mb-4 flex items-center gap-2">
-                <span>Modules</span>
-                <span className="w-1 h-1 rounded-full bg-red-500"></span>
+              <h4 className="text-xs text-[#deb86d] font-mono font-bold tracking-widest uppercase mb-4">
+                CAMPUS MODULES
               </h4>
-              <ul className="space-y-2.5 text-xs text-slate-400">
+              <ul className="space-y-2.5 text-xs text-[#9bb0a2]">
                 <li>
-                  <a href="#vault" className="hover:text-white transition-colors">
-                    Campus Vault (PYQs & Notes)
+                  <a href="#explorer" className="hover:text-white transition-colors">
+                    The Academic Vault (PYQs)
                   </a>
                 </li>
                 <li>
-                  <a href="#board" className="hover:text-white transition-colors">
+                  <a href="#explorer" className="hover:text-white transition-colors">
                     The Board (Official Notices)
                   </a>
                 </li>
                 <li>
-                  <a href="#board" className="hover:text-white transition-colors">
-                    Lost & Found Recovery Wall
+                  <a href="#explorer" className="hover:text-white transition-colors">
+                    Lost &amp; Found Private Recovery
                   </a>
                 </li>
                 <li>
-                  <a href="#marketplace" className="hover:text-white transition-colors">
-                    0% Fee Peer Marketplace
+                  <a href="#explorer" className="hover:text-white transition-colors">
+                    0% Commission Peer Market
                   </a>
                 </li>
                 <li>
-                  <a href="#levels" className="hover:text-white transition-colors">
-                    4 Levels of Mastery Quest
-                  </a>
+                  <Link href="/community" className="hover:text-white transition-colors">
+                    Campus Guilds &amp; Cohorts
+                  </Link>
                 </li>
                 <li>
                   <a href="#faq" className="hover:text-white transition-colors">
-                    Student FAQ & Security
+                    Student FAQ &amp; Privacy
                   </a>
                 </li>
               </ul>
@@ -83,78 +95,69 @@ export default function Footer() {
 
             {/* Column 2: Department Taxonomy */}
             <div>
-              <h4 className="text-xs text-white font-bold tracking-wider uppercase mb-4 flex items-center gap-2">
-                <span>Departments</span>
-                <span className="w-1 h-1 rounded-full bg-red-500"></span>
+              <h4 className="text-xs text-[#deb86d] font-mono font-bold tracking-widest uppercase mb-4">
+                DEPARTMENTS
               </h4>
-              <ul className="space-y-2.5 text-xs text-slate-400">
+              <ul className="space-y-2.5 text-xs text-[#9bb0a2]">
                 <li>
-                  <a href="#vault" className="hover:text-white transition-colors">
+                  <a href="#explorer" className="hover:text-white transition-colors">
                     Computer Science (CSE)
                   </a>
                 </li>
                 <li>
-                  <a href="#vault" className="hover:text-white transition-colors">
-                    Electronics & Comm. (ECE)
+                  <a href="#explorer" className="hover:text-white transition-colors">
+                    Electronics &amp; Comm (ECE)
                   </a>
                 </li>
                 <li>
-                  <a href="#vault" className="hover:text-white transition-colors">
+                  <a href="#explorer" className="hover:text-white transition-colors">
                     Electrical Engineering (EE)
                   </a>
                 </li>
                 <li>
-                  <a href="#vault" className="hover:text-white transition-colors">
+                  <a href="#explorer" className="hover:text-white transition-colors">
                     Mechanical Engineering (ME)
                   </a>
                 </li>
                 <li>
-                  <a href="#vault" className="hover:text-white transition-colors">
+                  <a href="#explorer" className="hover:text-white transition-colors">
                     Information Technology (IT)
                   </a>
                 </li>
                 <li>
-                  <a href="#vault" className="hover:text-white transition-colors">
-                    MCA & M.Tech Cohorts
+                  <a href="#explorer" className="hover:text-white transition-colors">
+                    MCA &amp; M.Tech Postgrad
                   </a>
                 </li>
               </ul>
             </div>
 
-            {/* Column 3: Community */}
+            {/* Column 3: Helplines & Community */}
             <div>
-              <h4 className="text-xs text-white font-bold tracking-wider uppercase mb-4 flex items-center gap-2">
-                <span>Community</span>
-                <span className="w-1 h-1 rounded-full bg-red-500"></span>
+              <h4 className="text-xs text-[#deb86d] font-mono font-bold tracking-widest uppercase mb-4">
+                CAMPUS GUILDS
               </h4>
-              <ul className="space-y-2.5 text-xs text-slate-400">
+              <ul className="space-y-2.5 text-xs text-[#9bb0a2]">
                 <li>
-                  <a href="/community" className="text-white font-medium hover:text-red-400 transition-colors inline-flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                    <span>Campus Guilds & Cohorts</span>
+                  <a
+                    href="https://dc.kgec.tech"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors inline-flex items-center gap-1 group text-[#f5f5f0]"
+                  >
+                    <span>Developers Community (DC)</span>
+                    <ArrowUpRight className="w-3 h-3 text-[#c79e4d] group-hover:translate-x-0.5 transition-transform" />
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="https://journey-2-mastery.vercel.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors inline-flex items-center gap-1 group"
-                  >
-                    <span>Journey to Mastery</span>
-                    <ArrowUpRight className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" />
-                  </a>
+                  <Link href="/community" className="hover:text-white transition-colors">
+                    Robotics &amp; Automation
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="https://dc.kgec.tech/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors inline-flex items-center gap-1 group"
-                  >
-                    <span>Developers Community KGEC</span>
-                    <ArrowUpRight className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" />
-                  </a>
+                  <Link href="/community" className="hover:text-white transition-colors">
+                    E-Cell &amp; Innovation
+                  </Link>
                 </li>
                 <li>
                   <a href="#mentors" className="hover:text-white transition-colors">
@@ -162,9 +165,15 @@ export default function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="#timeline" className="hover:text-white transition-colors">
-                    28-Day Milestone Schedule
-                  </a>
+                  <span className="text-[#64796c] block mt-4 text-[10px] font-mono uppercase">
+                    CAMPUS HELPLINES:
+                  </span>
+                  <span className="text-[11px] text-[#8a9f92] block mt-0.5">
+                    Central Library: lib@kgec.edu.in
+                  </span>
+                  <span className="text-[11px] text-[#8a9f92] block">
+                    T&amp;P Cell: tpo@kgec.edu.in
+                  </span>
                 </li>
               </ul>
             </div>
@@ -173,11 +182,11 @@ export default function Footer() {
         </div>
 
         {/* Bottom Strip */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#7d9385]">
           <p className="flex items-center gap-1 text-center sm:text-left">
-            <span>© 2026 College Nexus. Built with</span>
-            <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
-            <span>for Journey to Mastery by Dev Community KGEC.</span>
+            <span>© 2026 College Nexus. Engineered with</span>
+            <Heart className="w-3.5 h-3.5 text-[#deb86d] fill-[#deb86d]" />
+            <span>by Developers Community KGEC.</span>
           </p>
 
           <div className="flex items-center gap-3">
@@ -185,7 +194,7 @@ export default function Footer() {
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-lg bg-[#0e1a14] hover:bg-[#15271e] border border-[#1b3225] text-[#9db0a3] hover:text-[#deb86d] flex items-center justify-center transition-colors"
               aria-label="Instagram"
             >
               <InstagramIcon className="w-4 h-4" />
@@ -194,16 +203,25 @@ export default function Footer() {
               href="https://linkedin.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-lg bg-[#0e1a14] hover:bg-[#15271e] border border-[#1b3225] text-[#9db0a3] hover:text-[#deb86d] flex items-center justify-center transition-colors"
               aria-label="LinkedIn"
             >
               <LinkedinIcon className="w-4 h-4" />
             </a>
             <a
+              href="https://github.com/Bar-7150/College-Nexus"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 rounded-lg bg-[#0e1a14] hover:bg-[#15271e] border border-[#1b3225] text-[#9db0a3] hover:text-[#deb86d] flex items-center justify-center transition-colors"
+              aria-label="GitHub Repository"
+            >
+              <GithubIcon className="w-4 h-4" />
+            </a>
+            <a
               href="https://dc.kgec.tech"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-lg bg-[#0e1a14] hover:bg-[#15271e] border border-[#1b3225] text-[#9db0a3] hover:text-[#deb86d] flex items-center justify-center transition-colors"
               aria-label="KGEC Dev Community Website"
             >
               <Globe className="w-4 h-4" />

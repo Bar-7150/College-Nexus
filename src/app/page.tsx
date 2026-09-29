@@ -5,11 +5,14 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import StatsCounter from "@/components/StatsCounter";
 import ArsenalBento from "@/components/ArsenalBento";
-import CardShowcase from "@/components/CardShowcase";
-// import QuestLevels from "@/components/QuestLevels";
-// import Timeline from "@/components/Timeline";
-// import Mentors from "@/components/Mentors";
-// import FAQSection from "@/components/FAQSection";
+import HeritageSection from "@/components/HeritageSection";
+import SignaturePortals from "@/components/SignaturePortals";
+import SocietiesRibbon from "@/components/SocietiesRibbon";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import CampusFlowFAQ from "@/components/CampusFlowFAQ";
+import CampusExplorer from "@/components/CampusExplorer";
+import MindsSection from "@/components/MindsSection";
+import AlertsBanner from "@/components/AlertsBanner";
 import Footer from "@/components/Footer";
 import LoginModal from "@/components/LoginModal";
 
@@ -17,38 +20,47 @@ export default function Home() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   return (
-    <main className="min-h-screen bg-[#fbf9f5] text-[#1a1a1a] relative selection:bg-[#b93a32] selection:text-white">
-      {/* Navigation Header */}
+    <main className="min-h-screen bg-[#f7f5ef] text-[#142018] relative selection:bg-[#c79e4d] selection:text-[#0b1510]">
+      {/* 1. Navigation Header */}
       <Navbar onOpenLoginModal={() => setLoginModalOpen(true)} />
 
-      {/* Hero Section with Live Terminal Card */}
+      {/* 2. Hero Section with Atmospheric College Background & Live Pulse Preview Card */}
       <Hero onOpenLoginModal={() => setLoginModalOpen(true)} />
 
-      {/* Live Campus Pulse Statistics Bar */}
+      {/* 3. Live Campus Pulse Statistics Bar (Ivory Ribbon with Gold Accents) */}
       <StatsCounter />
 
-      {/* Core Arsenal Bento Grid (4 Core Campus Pillars) */}
+      {/* 4. The Soul of the Intranet (Dark Luxury Container Card with Engineering Lab & Highlights) */}
       <ArsenalBento />
 
-      {/* All Necessary Card Components Showcase (Vault, Notices, Lost & Found, Marketplace) */}
-      <CardShowcase />
+      {/* 5. Traditional Heritage, Modern Artistry (Panoramic Campus Card + 3 Ivory Feature Cards) */}
+      <HeritageSection />
 
-      {/* The 4 Levels of Mastery (Ronin -> Kenshi -> Samurai -> Shogun) */}
-      {/* <QuestLevels /> */}
+      {/* 6. Signatures Crafted for the Curious (Dark Card + 4 Vertical Portals) */}
+      <SignaturePortals />
 
-      {/* 4-Week Schedule Timeline */}
-      {/* <Timeline /> */}
+      {/* 7. Affiliated KGEC Guilds & Technical Societies Strip */}
+      <SocietiesRibbon />
 
-      {/* Honored Mentors & Senseis from DC KGEC */}
-      {/* <Mentors /> */}
+      {/* 8. Kind Words from Amazing Students & Alumni (Spotlight Photo + 3 Stacked Reviews) */}
+      <TestimonialsSection />
 
-      {/* Interactive FAQ Section */}
-      {/* <FAQSection /> */}
+      {/* 9. A Seamless Campus Flow (4 Steps) + Interactive Accordion FAQ */}
+      <CampusFlowFAQ />
 
-      {/* Dedicated Multi-Column Footer */}
+      {/* 10. Interactive Campus Explorer (Matching "Interactive Menu Explorer" in Reference Screenshot) */}
+      <CampusExplorer onOpenLoginModal={() => setLoginModalOpen(true)} />
+
+      {/* 11. The Minds Behind the Intranet (Dev Community KGEC Student Leads & Mentors) */}
+      <MindsSection />
+
+      {/* 12. Official Push Broadcasts / Circular Alerts Subscription Banner */}
+      <AlertsBanner />
+
+      {/* 13. Dedicated Luxury Multi-Column Footer with Helplines & Status */}
       <Footer />
 
-      {/* Interactive Roll Verification / Login Modal */}
+      {/* 14. Interactive Roll Verification / Login Modal */}
       <LoginModal
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
