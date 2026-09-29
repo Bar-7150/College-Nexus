@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   MOCK_VAULT_ITEMS,
   MOCK_NOTICES,
@@ -28,6 +28,7 @@ import {
   ShoppingBag,
   Sparkles,
   ChevronRight,
+  ChevronLeft,
   Eye,
   FileText,
   Star,
@@ -44,10 +45,18 @@ export default function CampusExplorer({ onOpenLoginModal }: CampusExplorerProps
   >("ALL");
   const [deptFilter, setDeptFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedClaimItem, setSelectedClaimItem] = useState<LostFoundItem | null>(null);
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null);
   const [selectedVaultItem, setSelectedVaultItem] = useState<VaultItem | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const ITEMS_PER_PAGE = 6; // Maximum 2 rows (3 columns x 2 rows)
+
+  // Reset page when category, branch, or search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory, deptFilter, searchQuery]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -163,6 +172,25 @@ export default function CampusExplorer({ onOpenLoginModal }: CampusExplorerProps
     return list;
   }, [activeCategory, deptFilter, searchQuery]);
 
+  const totalPages = Math.ceil(aggregatedCards.length / ITEMS_PER_PAGE);
+
+  // Strictly maximum 2 rows (6 cards on desktop: 3 cols x 2 rows)
+  const displayedCards = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return aggregatedCards.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [aggregatedCards, currentPage, ITEMS_PER_PAGE]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    const explorerElem = document.getElementById("explorer");
+    if (explorerElem) {
+      const rect = explorerElem.getBoundingClientRect();
+      if (rect.top < -50) {
+        explorerElem.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <section id="explorer" className="py-14 sm:py-20 relative bg-transparent overflow-visible">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
@@ -247,13 +275,21 @@ export default function CampusExplorer({ onOpenLoginModal }: CampusExplorerProps
             </button>
           ))}
           <span className="text-[11px] text-[#b4c8bb] ml-auto hidden sm:inline">
-            Showing {aggregatedCards.length} verified listings
+            {aggregatedCards.length > ITEMS_PER_PAGE ? (
+              <>
+                Showing <span className="text-white font-semibold">{(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, aggregatedCards.length)}</span> of <span className="text-[#deb86d] font-semibold">{aggregatedCards.length}</span> verified listings
+              </>
+            ) : (
+              <>
+                Showing <span className="text-white font-semibold">{aggregatedCards.length}</span> verified listings
+              </>
+            )}
           </span>
         </div>
 
-        {/* 3-Column Luxury Card Grid with 90% Transparent Ultra-Glass and Staggered Animations */}
+        {/* 3-Column Luxury Card Grid (Maximum 2 rows = 6 items) with 90% Transparent Ultra-Glass and Staggered Animations */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {aggregatedCards.map((card, idx) => (
+          {displayedCards.map((card, idx) => (
             <ScrollReveal key={card.id} delay={(idx % 3) * 120} className="h-full">
               <div
                 className="h-full bg-[#070e0a]/10 hover:bg-[#070e0a]/20 backdrop-blur-md border border-white/25 sm:border-[#c79e4d]/35 hover:border-[#c79e4d] rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-2xl transition-all duration-300 group"
@@ -320,7 +356,54 @@ export default function CampusExplorer({ onOpenLoginModal }: CampusExplorerProps
           ))}
         </div>
 
-        {aggregatedCards.length === 0 && (
+        {/* Pagination Controls - Keeping maximum 2 rows visible at all times */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8 pt-2">
+            <button
+              onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className={`px-3.5 py-1.5 rounded-lg border text-xs font-mono transition-all flex items-center gap-1.5 backdrop-blur-md cursor-pointer ${
+                currentPage === 1
+                  ? "border-white/10 text-white/25 cursor-not-allowed bg-transparent"
+                  : "border-white/20 bg-[#070e0a]/60 text-[#dbe7df] hover:border-[#c79e4d] hover:text-[#deb86d] hover:bg-[#070e0a]/80"
+              }`}
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Prev</span>
+            </button>
+
+            <div className="flex items-center gap-1.5">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`w-8 h-8 rounded-lg border text-xs font-mono font-medium transition-all backdrop-blur-md cursor-pointer ${
+                    currentPage === pageNum
+                      ? "bg-[#c79e4d] border-[#c79e4d] text-[#08120c] font-bold shadow-md"
+                      : "bg-[#070e0a]/60 border-white/20 text-[#dbe7df] hover:border-[#c79e4d] hover:text-[#deb86d] hover:bg-[#070e0a]/80"
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className={`px-3.5 py-1.5 rounded-lg border text-xs font-mono transition-all flex items-center gap-1.5 backdrop-blur-md cursor-pointer ${
+                currentPage === totalPages
+                  ? "border-white/10 text-white/25 cursor-not-allowed bg-transparent"
+                  : "border-white/20 bg-[#070e0a]/60 text-[#dbe7df] hover:border-[#c79e4d] hover:text-[#deb86d] hover:bg-[#070e0a]/80"
+              }`}
+            >
+              <span>Next</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {displayedCards.length === 0 && (
           <div className="text-center py-16 bg-[#070e0a]/40 backdrop-blur-md rounded-2xl border border-white/20">
             <p className="text-sm font-serif text-white">
               No listings found matching your current filter criteria.
