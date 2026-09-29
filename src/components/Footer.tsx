@@ -129,6 +129,12 @@ export default function Footer() {
               </h4>
               <ul className="space-y-2.5 text-xs text-slate-400">
                 <li>
+                  <a href="/community" className="text-white font-medium hover:text-red-400 transition-colors inline-flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span>Campus Guilds & Cohorts</span>
+                  </a>
+                </li>
+                <li>
                   <a
                     href="https://journey-2-mastery.vercel.app/"
                     target="_blank"

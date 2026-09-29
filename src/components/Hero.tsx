@@ -97,14 +97,22 @@ export default function Hero({ onOpenLoginModal }: HeroProps) {
                 className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs tracking-wider uppercase rounded-xl shadow-sm hover:shadow transition-all duration-200 cursor-pointer"
               >
                 <Users className="w-4 h-4" />
-                <span>STUDENT NETWORK & PROFILES</span>
+                <span>STUDENT NETWORK</span>
+              </Link>
+
+              <Link
+                href="/community"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 font-semibold text-xs tracking-wider uppercase rounded-xl transition-all duration-200"
+              >
+                <Sparkles className="w-4 h-4 text-red-600" />
+                <span>COMMUNITIES</span>
               </Link>
 
               <a
                 href="#vault"
                 className="inline-flex items-center gap-2 px-5 py-3.5 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 font-semibold text-xs tracking-wider uppercase rounded-xl transition-all duration-200 shadow-2xs"
               >
-                <span>EXPLORE VAULT</span>
+                <span>VAULT</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
 

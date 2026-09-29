@@ -38,6 +38,18 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
       ],
     },
     {
+      name: "Community",
+      href: "/community",
+      badge: "Active Hubs",
+      submenu: [
+        { title: "Batch 2025-2029", desc: "Incoming Freshers & 1st Year Cohort", code: "BATCH '29", url: "/community?search=Batch+2025-2029" },
+        { title: "Dev Community (DC KGEC)", desc: "Open Source, Hackathons & Nexus Guild", code: "TECH", url: "/community?search=Dev+Community" },
+        { title: "KGECians", desc: "All-Campus Lounge, Fests & Alumni Network", code: "CAMPUS", url: "/community?search=KGECians" },
+        { title: "RoboCell & Clubs", desc: "IoT, Combat Robots, Drones & Societies", code: "CLUBS", url: "/community?cat=Clubs" },
+        { title: "Explore All Communities", desc: "Browse all 6+ cohort study guilds & hubs", code: "ALL", url: "/community" },
+      ],
+    },
+    {
       name: "Network",
       href: "/profile",
       submenu: [
