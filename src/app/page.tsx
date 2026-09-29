@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import FixedCampusBackground from "@/components/FixedCampusBackground";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import StatsCounter from "@/components/StatsCounter";
@@ -20,7 +21,10 @@ export default function Home() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   return (
-    <main className="min-h-screen bg-[#f7f5ef] text-[#142018] relative selection:bg-[#c79e4d] selection:text-[#0b1510]">
+    <main className="min-h-screen bg-[#070e0a] text-[#f5f9f6] relative selection:bg-[#c79e4d] selection:text-[#0b1510] overflow-x-hidden">
+      {/* Global Fixed Static Background Canvas: Viewport-locked 100vw x 100vh with seamless cross-fading & zero vertical stretching */}
+      <FixedCampusBackground />
+
       {/* 1. Navigation Header */}
       <Navbar onOpenLoginModal={() => setLoginModalOpen(true)} />
 

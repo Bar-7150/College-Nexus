@@ -33,31 +33,21 @@ export default function TestimonialsSection() {
   ];
 
   return (
-    <section className="py-24 md:py-36 relative [clip-path:inset(0)] min-h-[90vh] bg-[#070e0a]">
-      {/* Full-Screen Edge-to-Edge Fixed Static Background: KGEC Students in Lecture Hall Artwork */}
-      <div className="fixed inset-0 -z-10 pointer-events-none">
-        <img
-          src="/kgec-students-hall.jpg"
-          alt="KGEC Students in Lecture Hall Watercolor Painting"
-          className="w-full h-full object-cover object-[center_35%] scale-100 filter brightness-95 contrast-[1.04]"
-        />
-
-        {/* Ambient Translucent Vignette */}
-        <div className="absolute inset-0 bg-[#070e0a]/35"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#070e0a]/75 via-transparent to-[#070e0a]/80"></div>
-      </div>
-
+    <section
+      id="testimonials"
+      className="py-14 sm:py-20 relative bg-transparent overflow-visible"
+    >
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         
         {/* Section Header */}
-        <ScrollReveal>
-          <div className="text-center max-w-3xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#070e0a]/65 border border-[#c79e4d]/40 text-[#deb86d] text-[10px] font-mono tracking-widest uppercase mb-4 backdrop-blur-md shadow-lg">
+        <ScrollReveal delay={100} distance={24}>
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#070e0a]/70 border border-[#c79e4d]/40 text-[#deb86d] text-[10px] font-mono tracking-widest uppercase mb-4 backdrop-blur-md shadow-lg">
               <span className="w-1.5 h-1.5 rounded-full bg-[#c79e4d] animate-pulse"></span>
               <span>VOICES OF THE INTRANET // KGEC HALL OF TESTIMONIALS</span>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight leading-tight drop-shadow-lg">
+            <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight leading-tight drop-shadow-xl">
               Kind Words from <br className="hidden sm:inline" />
               <span className="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#dfc285] via-[#deb86d] to-[#c79e4d]">
                 KGEC Students &amp; Alumni.
@@ -72,16 +62,16 @@ export default function TestimonialsSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
-          {/* Left Column: Featured Spotlight Card with 90% Transparent Ultra-Glass */}
+          {/* Left Column: Featured Spotlight Card with Ultra-Glass floating over static lecture hall artwork */}
           <div className="lg:col-span-5">
-            <ScrollReveal delay={100} className="h-full">
-              <div className="h-full relative rounded-3xl overflow-hidden shadow-2xl border border-white/25 sm:border-[#c79e4d]/40 bg-[#070e0a]/15 hover:bg-[#070e0a]/25 backdrop-blur-md p-8 flex flex-col justify-between group transition-all duration-300">
+            <ScrollReveal delay={200} distance={30} className="h-full">
+              <div className="h-full relative rounded-3xl overflow-hidden shadow-2xl border border-white/25 sm:border-[#c79e4d]/40 bg-[#070e0a]/20 hover:bg-[#070e0a]/35 backdrop-blur-md p-8 flex flex-col justify-between group transition-all duration-300">
                 <div>
                   <div className="flex items-center justify-between mb-6">
-                    <span className="text-[10px] font-mono text-[#deb86d] tracking-widest uppercase font-bold px-2.5 py-1 bg-black/30 rounded-full border border-white/20">
+                    <span className="text-[10px] font-mono text-[#deb86d] tracking-widest uppercase font-bold px-2.5 py-1 bg-black/35 rounded-full border border-white/20">
                       STUDENT SPOTLIGHT
                     </span>
-                    <Quote className="w-6 h-6 text-[#c79e4d]/70" />
+                    <Quote className="w-6 h-6 text-[#c79e4d]/80" />
                   </div>
 
                   <div className="flex items-center gap-1 mb-4">
@@ -113,12 +103,12 @@ export default function TestimonialsSection() {
             </ScrollReveal>
           </div>
 
-          {/* Right Column: 3 Stacked 90% Transparent Ultra-Glass Review Cards */}
+          {/* Right Column: 3 Stacked Ultra-Glass Review Cards with Staggered Scroll Reveal */}
           <div className="lg:col-span-7 flex flex-col justify-between gap-5">
             {reviews.map((rev, idx) => (
-              <ScrollReveal key={idx} delay={150 + idx * 100}>
+              <ScrollReveal key={idx} delay={250 + idx * 140} distance={28}>
                 <div
-                  className="bg-[#070e0a]/15 hover:bg-[#070e0a]/25 backdrop-blur-md border border-white/25 sm:border-[#c79e4d]/35 hover:border-[#c79e4d] rounded-2xl p-6 sm:p-7 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-[#070e0a]/20 hover:bg-[#070e0a]/35 backdrop-blur-md border border-white/25 sm:border-[#c79e4d]/35 hover:border-[#c79e4d] rounded-2xl p-6 sm:p-7 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">

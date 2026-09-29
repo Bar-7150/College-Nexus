@@ -15,11 +15,11 @@ import {
 
 export default function ArsenalBento() {
   return (
-    <section id="portals" className="py-16 md:py-24 bg-[#f7f5ef] relative overflow-hidden">
+    <section id="soul" className="py-16 md:py-24 bg-transparent relative overflow-hidden">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         
         {/* Large Rounded Dark Luxury Container matching Reference Screenshot Section 2 */}
-        <div className="bg-[#0b1510] border border-[#1a2f23] rounded-3xl p-8 sm:p-12 lg:p-14 text-[#f5f5f0] shadow-2xl relative overflow-hidden">
+        <div className="bg-[#070e0a]/75 backdrop-blur-xl border border-white/20 sm:border-[#c79e4d]/35 rounded-3xl p-8 sm:p-12 lg:p-14 text-[#f5f5f0] shadow-2xl relative overflow-hidden">
           
           {/* Subtle Ambient Background Glow */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#c79e4d]/10 rounded-full blur-3xl pointer-events-none"></div>

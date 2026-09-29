@@ -14,11 +14,11 @@ export default function AlertsBanner() {
   };
 
   return (
-    <section className="py-12 md:py-16 bg-[#f7f5ef] relative overflow-hidden">
+    <section id="alerts" className="py-12 md:py-16 bg-transparent relative overflow-hidden">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         
         {/* Dark Curved Container matching Reference Screenshot Newsletter Card */}
-        <div className="bg-[#0b1510] border border-[#1a2f23] rounded-3xl p-8 sm:p-12 text-[#f5f5f0] shadow-2xl relative overflow-hidden">
+        <div className="bg-[#070e0a]/75 backdrop-blur-xl border border-white/20 sm:border-[#c79e4d]/35 rounded-3xl p-8 sm:p-12 text-[#f5f5f0] shadow-2xl relative overflow-hidden">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             

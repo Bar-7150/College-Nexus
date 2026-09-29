@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { BookOpen, BellRing, ShieldCheck, ArrowRight, ArrowUpRight, Sparkles } from "lucide-react";
+import { BookOpen, BellRing, ShieldCheck, ArrowRight, ArrowUpRight } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 
 export default function HeritageSection() {
@@ -33,31 +33,21 @@ export default function HeritageSection() {
   ];
 
   return (
-    <section id="heritage" className="py-24 md:py-36 relative [clip-path:inset(0)] min-h-[90vh] flex flex-col justify-between bg-[#070e0a]">
-      {/* Fixed Static Background: KGEC Campus Painting Stays Completely Fixed While Content Scrolls */}
-      <div className="fixed inset-0 -z-10 pointer-events-none">
-        <img
-          src="/kgec-hero.jpg"
-          alt="Kalyani Government Engineering College Campus Architecture Artwork"
-          className="w-full h-full object-cover object-[center_35%] scale-100 filter brightness-100 contrast-[1.03]"
-        />
-
-        {/* Lightweight Semi-Transparent Gradient: Keeps artwork vibrant while maintaining text legibility */}
-        <div className="absolute inset-0 bg-[#070e0a]/25"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#070e0a]/70 via-transparent to-[#070e0a]/75"></div>
-      </div>
-
-      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 relative z-10 flex flex-col justify-between h-full">
+    <section
+      id="heritage"
+      className="py-14 sm:py-20 relative bg-transparent overflow-visible"
+    >
+      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         
-        {/* Top Section Header with Fade-in Animation */}
-        <ScrollReveal>
-          <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#070e0a]/60 border border-[#c79e4d]/40 text-[#deb86d] text-[10px] font-mono tracking-widest uppercase mb-4 backdrop-blur-md shadow-lg">
+        {/* Top Section Header with Smooth Fade-in Animation */}
+        <ScrollReveal delay={100} distance={24}>
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#070e0a]/65 border border-[#c79e4d]/40 text-[#deb86d] text-[10px] font-mono tracking-widest uppercase mb-4 backdrop-blur-md shadow-lg">
               <span className="w-1.5 h-1.5 rounded-full bg-[#c79e4d] animate-pulse"></span>
               <span>KALYANI GOVERNMENT ENGINEERING COLLEGE // ESTD 1995</span>
             </div>
 
-            <h2 className="text-4xl sm:text-6xl font-serif text-white tracking-tight leading-tight drop-shadow-lg">
+            <h2 className="text-4xl sm:text-6xl font-serif text-white tracking-tight leading-tight drop-shadow-xl">
               Traditional Heritage, <br className="hidden sm:inline" />
               <span className="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#dfc285] via-[#deb86d] to-[#c79e4d]">
                 Modern Artistry.
@@ -80,22 +70,19 @@ export default function HeritageSection() {
           </div>
         </ScrollReveal>
 
-        {/* Center Space: Open view through to the fixed KGEC campus building */}
-        <div className="my-8 sm:my-16 min-h-[120px] sm:min-h-[220px]"></div>
-
-        {/* Bottom Strip: 90% Transparent Ultra-Glass Feature Cards with Staggered Scroll Reveal */}
+        {/* Feature Cards Grid: Positioned closely below the header with compact, balanced spacing */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {cards.map((card, idx) => {
             const Icon = card.icon;
             return (
-              <ScrollReveal key={idx} delay={idx * 150}>
-                <div className="h-full bg-[#070e0a]/10 hover:bg-[#070e0a]/20 backdrop-blur-md border border-white/30 sm:border-[#c79e4d]/45 hover:border-[#c79e4d] rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] hover:shadow-xl transition-all duration-300 group">
+              <ScrollReveal key={idx} delay={idx * 160 + 100} distance={32}>
+                <div className="h-full bg-[#070e0a]/20 hover:bg-[#070e0a]/35 backdrop-blur-md border border-white/25 sm:border-[#c79e4d]/40 hover:border-[#c79e4d] rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-[0_8px_32px_0_rgba(0,0,0,0.35)] hover:shadow-2xl transition-all duration-300 group">
                   <div>
                     <div className="flex items-center justify-between mb-5">
                       <span className="text-[10px] font-mono tracking-widest text-[#deb86d] uppercase font-bold drop-shadow-xs">
                         {card.module}
                       </span>
-                      <span className="text-[9px] font-mono px-2.5 py-0.5 bg-black/25 text-[#deb86d] border border-white/20 rounded-full font-semibold backdrop-blur-xs">
+                      <span className="text-[9px] font-mono px-2.5 py-0.5 bg-black/35 text-[#deb86d] border border-white/20 rounded-full font-semibold backdrop-blur-xs">
                         {card.tag}
                       </span>
                     </div>

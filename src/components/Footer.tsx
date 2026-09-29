@@ -7,7 +7,7 @@ import { InstagramIcon, LinkedinIcon, GithubIcon } from "@/components/SocialIcon
 
 export default function Footer() {
   return (
-    <footer className="bg-[#08110c] text-[#93a69a] pt-20 pb-12 border-t border-[#16271e] relative z-20">
+    <footer id="footer" className="bg-[#070e0a]/95 backdrop-blur-xl text-[#93a69a] pt-20 pb-12 border-t border-[#c79e4d]/30 relative z-20">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12">
         
         {/* Main Footer Grid */}

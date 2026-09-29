@@ -164,25 +164,12 @@ export default function CampusExplorer({ onOpenLoginModal }: CampusExplorerProps
   }, [activeCategory, deptFilter, searchQuery]);
 
   return (
-    <section id="explorer" className="py-24 md:py-36 relative [clip-path:inset(0)] min-h-screen bg-[#070e0a]">
-      {/* Full-Screen Edge-to-Edge Fixed Static Background: Historic Academic Library Watercolor Painting */}
-      <div className="fixed inset-0 -z-10 pointer-events-none">
-        <img
-          src="/kgec-library.jpg"
-          alt="KGEC Academic Central Library Watercolor Artwork"
-          className="w-full h-full object-cover object-[center_35%] scale-100 filter brightness-95 contrast-[1.03]"
-        />
-
-        {/* Ambient Translucent Vignette: Keeps watercolor library shelves, books & reading tables clearly visible */}
-        <div className="absolute inset-0 bg-[#070e0a]/30"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#070e0a]/80 via-transparent to-[#070e0a]/85"></div>
-      </div>
-
+    <section id="explorer" className="py-14 sm:py-20 relative bg-transparent overflow-visible">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         
         {/* Header Section positioned cleanly over the library background */}
         <ScrollReveal>
-          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#070e0a]/70 border border-[#c79e4d]/40 text-[#deb86d] text-[10px] font-mono tracking-widest uppercase mb-4 backdrop-blur-md shadow-lg">
               <span className="w-1.5 h-1.5 rounded-full bg-[#c79e4d] animate-pulse"></span>
               <span>CAMPUS INTEL ARCHIVE // 全方位検索</span>
