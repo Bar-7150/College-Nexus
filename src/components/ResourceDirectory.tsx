@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BookPlus, X } from "lucide-react";
 import CampusExplorer from "@/components/CampusExplorer";
@@ -17,13 +17,24 @@ export default function ResourceDirectory({ kind }: { kind: DirectoryKind }) {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [subjectModalOpen, setSubjectModalOpen] = useState(false);
   const [subjectForm, setSubjectForm] = useState({ department: "CSE", name: "", code: "", semester: "1", description: "" });
-  const [createdSubjects, setCreatedSubjects] = useState<Array<typeof subjectForm>>([]);
+  const [createdSubjects, setCreatedSubjects] = useState<Array<typeof subjectForm>>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      return JSON.parse(window.localStorage.getItem("nexus_created_subjects") || "[]");
+    } catch {
+      return [];
+    }
+  });
   const [subjectToast, setSubjectToast] = useState<string | null>(null);
   const { profile } = useAuth();
   const initialCategory = kind === "marketplace" ? "MARKETPLACE" : kind === "notice" ? "NOTICES" : kind === "lost" ? "LOSTFOUND" : "VAULT";
   const initialDeptFilter = kind === "cse" ? "CSE" : "ALL";
   const requiresLogin = kind === "marketplace";
   const canAddSubject = kind === "vault" || kind === "cse";
+
+  useEffect(() => {
+    window.localStorage.setItem("nexus_created_subjects", JSON.stringify(createdSubjects));
+  }, [createdSubjects]);
 
   const openSubjectForm = () => {
     if (!profile) {
