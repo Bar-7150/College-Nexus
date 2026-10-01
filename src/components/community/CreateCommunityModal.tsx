@@ -109,28 +109,28 @@ export default function CreateCommunityModal({
   const sampleEmblems = ["🚀", "⚡", "💻", "📚", "🤖", "🎓", "🏛️", "🎨", "⚽", "🔬"];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
-      <div className="bg-white w-full max-w-lg rounded-3xl border border-slate-200 shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050b08]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
+      <div className="bg-[#0b1510] w-full max-w-lg rounded-3xl border border-[#213b2c] sm:border-[#c79e4d]/35 shadow-2xl overflow-hidden text-[#f5f5f0]">
         {/* Header */}
-        <div className="bg-slate-900 p-6 text-white relative">
+        <div className="bg-[#0e1a14] p-6 relative border-b border-[#1b3125]">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+            className="absolute top-4 right-4 p-2 rounded-full bg-[#112017] hover:bg-[#162a1e] text-[#9cb0a2] hover:text-white transition-colors cursor-pointer border border-[#213b2c]"
           >
             <X className="w-4 h-4" />
           </button>
 
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400">
+            <span className="w-2 h-2 rounded-full bg-[#c79e4d] animate-pulse"></span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#deb86d] font-semibold">
               COMMUNITY DIRECTORY PROPOSAL
             </span>
           </div>
 
-          <h2 className="text-xl font-bold font-heading">
+          <h2 className="text-xl font-serif font-bold text-white">
             Create or Propose a Campus Guild
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#9cb0a2] mt-1 font-light leading-relaxed">
             Establish a verified batch cohort, study circle, or student interest club on College Nexus.
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function CreateCommunityModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Emblem selection */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+            <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] font-semibold mb-1.5">
               Select Monogram / Icon
             </label>
             <div className="flex flex-wrap gap-2">
@@ -150,8 +150,8 @@ export default function CreateCommunityModal({
                   onClick={() => setEmblem(emoji)}
                   className={`w-9 h-9 rounded-xl border text-lg flex items-center justify-center transition-all cursor-pointer ${
                     emblem === emoji
-                      ? "border-red-600 bg-red-50 ring-2 ring-red-600/20"
-                      : "border-slate-200 hover:bg-slate-50"
+                      ? "border-[#c79e4d] bg-[#c79e4d]/20 text-white ring-2 ring-[#c79e4d]/40"
+                      : "border-[#213b2c] bg-[#112017] hover:bg-[#162a1e] text-white"
                   }`}
                 >
                   {emoji}
@@ -163,7 +163,7 @@ export default function CreateCommunityModal({
           {/* Name & Category */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] font-semibold mb-1">
                 Community Name *
               </label>
               <input
@@ -172,18 +172,18 @@ export default function CreateCommunityModal({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Mech 2026 Core, AI Guild"
-                className="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600"
+                className="w-full text-xs px-3.5 py-2.5 bg-[#112017] border border-[#213b2c] rounded-xl focus:outline-none focus:border-[#c79e4d] text-white placeholder-[#687f71] font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] font-semibold mb-1">
                 Category
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as any)}
-                className="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 bg-white"
+                className="w-full text-xs px-3.5 py-2.5 bg-[#112017] border border-[#213b2c] rounded-xl focus:outline-none focus:border-[#c79e4d] text-white cursor-pointer font-mono"
               >
                 <option value="Batch">Batch & Cohort</option>
                 <option value="Tech">Tech & Engineering</option>
@@ -196,7 +196,7 @@ export default function CreateCommunityModal({
 
           {/* Tagline */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] font-semibold mb-1">
               Short Tagline *
             </label>
             <input
@@ -205,13 +205,13 @@ export default function CreateCommunityModal({
               value={tagline}
               onChange={(e) => setTagline(e.target.value)}
               placeholder="One line explaining what this community is for"
-              className="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600"
+              className="w-full text-xs px-3.5 py-2.5 bg-[#112017] border border-[#213b2c] rounded-xl focus:outline-none focus:border-[#c79e4d] text-white placeholder-[#687f71] font-mono"
             />
           </div>
 
           {/* Detailed Description */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] font-semibold mb-1">
               Description & Purpose
             </label>
             <textarea
@@ -219,13 +219,13 @@ export default function CreateCommunityModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Explain the activities, syllabus topics, or meetings held by this guild..."
-              className="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 resize-none"
+              className="w-full text-xs px-3.5 py-2.5 bg-[#112017] border border-[#213b2c] rounded-xl focus:outline-none focus:border-[#c79e4d] resize-none text-white placeholder-[#687f71] font-mono"
             />
           </div>
 
           {/* Tags */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] font-semibold mb-1">
               Tags (Comma separated)
             </label>
             <input
@@ -233,17 +233,17 @@ export default function CreateCommunityModal({
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
               placeholder="e.g. Python, Workshop, 3rd Sem, Gate"
-              className="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600"
+              className="w-full text-xs px-3.5 py-2.5 bg-[#112017] border border-[#213b2c] rounded-xl focus:outline-none focus:border-[#c79e4d] text-white placeholder-[#687f71] font-mono"
             />
           </div>
 
           {/* Privacy & Auth */}
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+          <div className="p-3.5 bg-[#101d16] border border-[#1d3527] rounded-xl flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold text-slate-800 block">
+              <span className="text-xs font-bold text-white block">
                 Roll Number Restricted
               </span>
-              <span className="text-[11px] text-slate-500">
+              <span className="text-[11px] text-[#9cb0a2] font-mono">
                 Only verified KGEC students can view and join
               </span>
             </div>
@@ -251,25 +251,25 @@ export default function CreateCommunityModal({
               type="checkbox"
               checked={isPrivate}
               onChange={(e) => setIsPrivate(e.target.checked)}
-              className="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer"
+              className="w-4 h-4 accent-[#c79e4d] rounded cursor-pointer"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-2 flex items-center justify-end gap-2.5">
+          <div className="pt-2 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+              className="px-4 py-2 text-xs font-mono text-[#9cb0a2] hover:text-white cursor-pointer transition-colors"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+              className="px-5 py-2.5 bg-gradient-to-r from-[#dfc285] via-[#c79e4d] to-[#b3853b] hover:brightness-110 text-[#08120c] text-xs font-bold font-mono uppercase tracking-wider rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-1.5"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
               <span>Launch Community</span>
             </button>
           </div>

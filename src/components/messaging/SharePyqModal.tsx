@@ -91,53 +91,53 @@ export default function SharePyqModal({
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white border border-slate-200 shadow-2xl rounded-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-[#070e0a] border border-[#c79e4d]/40 shadow-2xl rounded-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-white/10 bg-[#0b1510] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-[#c79e4d]/20 text-[#deb86d] border border-[#c79e4d]/30 flex items-center justify-center">
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-heading font-bold text-slate-900">
+              <h3 className="text-base font-serif font-bold text-white">
                 Share Campus Vault PYQ / Note
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-[#a3b899]">
                 Attach verified MAKAUT past papers directly into conversation
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
+            className="p-1 text-white/60 hover:text-white rounded-lg cursor-pointer hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Filter bar */}
-        <div className="p-4 bg-slate-50/70 border-b border-slate-100 space-y-3">
+        <div className="p-4 bg-white/[0.02] border-b border-white/10 space-y-3">
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#deb86d] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search by subject code, topic or exam..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-red-500"
+              className="w-full pl-10 pr-4 py-2 bg-[#0b1510] border border-white/15 rounded-xl text-xs text-white placeholder-white/40 focus:outline-none focus:border-[#c79e4d]"
             />
           </div>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
             {["ALL", "CSE", "ECE", "EE", "IT"].map((dept) => (
               <button
                 key={dept}
                 onClick={() => setSelectedDept(dept)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-mono font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   selectedDept === dept
-                    ? "bg-red-600 text-white shadow-2xs"
-                    : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+                    ? "bg-[#c79e4d] text-[#08120c] font-bold shadow-sm"
+                    : "bg-white/[0.04] border border-white/10 text-[#d4e4da] hover:bg-white/[0.08]"
                 }`}
               >
                 {dept}
@@ -163,31 +163,31 @@ export default function SharePyqModal({
                 });
                 onClose();
               }}
-              className="p-3 bg-white border border-slate-200 hover:border-red-300 hover:bg-red-50/40 rounded-xl transition-all cursor-pointer flex items-center justify-between gap-3 group"
+              className="p-3 bg-white/[0.03] border border-white/10 hover:border-[#c79e4d]/50 hover:bg-white/[0.06] rounded-xl transition-all cursor-pointer flex items-center justify-between gap-3 group"
             >
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-red-100/70 text-red-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
+                <div className="w-10 h-10 rounded-lg bg-[#c79e4d]/20 text-[#deb86d] border border-[#c79e4d]/30 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
                   <FileText className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-xs font-bold text-slate-900 group-hover:text-red-700">
+                    <span className="text-xs font-mono font-bold text-[#deb86d]">
                       {item.code}
                     </span>
-                    <span className="text-xs font-semibold text-slate-800">
+                    <span className="text-xs font-serif font-bold text-white group-hover:text-[#deb86d]">
                       {item.title}
                     </span>
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 bg-slate-100 text-slate-600 rounded">
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 bg-white/10 border border-white/15 text-[#d4e4da] rounded">
                       {item.badge}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-0.5 leading-normal">
+                  <p className="text-[11px] text-[#a3b899] mt-0.5 leading-normal">
                     {item.subtitle}
                   </p>
                 </div>
               </div>
 
-              <button className="px-3 py-1 bg-red-600 text-white rounded-lg text-xs font-semibold shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button className="px-3 py-1 bg-[#c79e4d] hover:bg-[#deb86d] text-[#08120c] rounded-lg text-xs font-bold font-mono uppercase tracking-wider shrink-0 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
                 Send
               </button>
             </div>

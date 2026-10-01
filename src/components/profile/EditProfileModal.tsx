@@ -42,19 +42,19 @@ export default function EditProfileModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white border border-slate-200 shadow-2xl rounded-2xl max-w-xl w-full overflow-hidden max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-[#070e0a] border border-[#c79e4d]/40 shadow-2xl rounded-2xl max-w-xl w-full overflow-hidden max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between shrink-0">
+        <div className="px-6 py-4 border-b border-white/10 bg-[#0b1510] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
-            <Edit3 className="w-5 h-5 text-red-600" />
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-mono">
+            <Edit3 className="w-5 h-5 text-[#deb86d]" />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
               Edit Intro & Campus Profile
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
+            className="text-white/60 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -64,7 +64,7 @@ export default function EditProfileModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] mb-1">
                 Full Name *
               </label>
               <input
@@ -72,11 +72,11 @@ export default function EditProfileModal({
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-red-500 font-medium"
+                className="w-full px-3.5 py-2 text-xs bg-[#0b1510] border border-white/15 focus:border-[#c79e4d] text-white placeholder-white/40 rounded-xl focus:outline-none font-medium"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] mb-1">
                 Pronouns
               </label>
               <input
@@ -84,13 +84,13 @@ export default function EditProfileModal({
                 placeholder="e.g. He/Him, She/Her, They/Them"
                 value={pronouns}
                 onChange={(e) => setPronouns(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-red-500"
+                className="w-full px-3.5 py-2 text-xs bg-[#0b1510] border border-white/15 focus:border-[#c79e4d] text-white placeholder-white/40 rounded-xl focus:outline-none font-medium"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] mb-1">
               Headline *
             </label>
             <textarea
@@ -98,16 +98,16 @@ export default function EditProfileModal({
               required
               value={headline}
               onChange={(e) => setHeadline(e.target.value)}
-              className="w-full px-3.5 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-red-500 leading-relaxed resize-none"
+              className="w-full px-3.5 py-2 text-xs bg-[#0b1510] border border-white/15 focus:border-[#c79e4d] text-white placeholder-white/40 rounded-xl focus:outline-none leading-relaxed resize-none font-medium"
             />
-            <span className="text-[11px] text-slate-400">
+            <span className="text-[11px] text-[#a3b899]">
               Summarize your technical roles, achievements, and current batch.
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] mb-1">
                 Department
               </label>
               <select
@@ -115,17 +115,17 @@ export default function EditProfileModal({
                 onChange={(e) =>
                   setDepartment(e.target.value as StudentProfile["department"])
                 }
-                className="w-full px-3.5 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-red-500 font-medium"
+                className="w-full px-3.5 py-2 text-xs bg-[#0b1510] border border-white/15 focus:border-[#c79e4d] text-white rounded-xl focus:outline-none font-medium"
               >
-                <option value="CSE">Computer Science & Engineering (CSE)</option>
-                <option value="ECE">Electronics & Communication (ECE)</option>
-                <option value="EE">Electrical Engineering (EE)</option>
-                <option value="ME">Mechanical Engineering (ME)</option>
-                <option value="IT">Information Technology (IT)</option>
+                <option value="CSE" className="bg-[#0b1510]">Computer Science & Engineering (CSE)</option>
+                <option value="ECE" className="bg-[#0b1510]">Electronics & Communication (ECE)</option>
+                <option value="EE" className="bg-[#0b1510]">Electrical Engineering (EE)</option>
+                <option value="ME" className="bg-[#0b1510]">Mechanical Engineering (ME)</option>
+                <option value="IT" className="bg-[#0b1510]">Information Technology (IT)</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] mb-1">
                 Batch Year
               </label>
               <input
@@ -133,46 +133,46 @@ export default function EditProfileModal({
                 value={batchYear}
                 onChange={(e) => setBatchYear(e.target.value)}
                 placeholder="e.g. 2022 - 2026 (3rd Year)"
-                className="w-full px-3.5 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-red-500"
+                className="w-full px-3.5 py-2 text-xs bg-[#0b1510] border border-white/15 focus:border-[#c79e4d] text-white placeholder-white/40 rounded-xl focus:outline-none font-medium"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] mb-1">
               Location
             </label>
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full px-3.5 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-red-500"
+              className="w-full px-3.5 py-2 text-xs bg-[#0b1510] border border-white/15 focus:border-[#c79e4d] text-white placeholder-white/40 rounded-xl focus:outline-none font-medium"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d] mb-1">
               About / Bio Summary
             </label>
             <textarea
               rows={4}
               value={about}
               onChange={(e) => setAbout(e.target.value)}
-              className="w-full px-3.5 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-red-500 leading-relaxed resize-none"
+              className="w-full px-3.5 py-2 text-xs bg-[#0b1510] border border-white/15 focus:border-[#c79e4d] text-white placeholder-white/40 rounded-xl focus:outline-none leading-relaxed resize-none font-medium"
             />
           </div>
 
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-xs"
+              className="px-4 py-2 border border-white/20 text-white/70 hover:text-white rounded-xl text-xs font-mono hover:bg-white/10 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-5 py-2 bg-[#c79e4d] hover:bg-[#deb86d] text-[#08120c] rounded-xl text-xs font-bold uppercase tracking-wider font-mono transition-colors shadow-md flex items-center gap-1.5 cursor-pointer"
             >
               <Save className="w-3.5 h-3.5" />
               <span>Save Changes</span>

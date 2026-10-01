@@ -49,6 +49,34 @@ function MessagesContent() {
   // Typing simulation
   const [isTyping, setIsTyping] = useState(false);
 
+  // Full Screen Mode state
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    if (!isFullscreen) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+      setIsFullscreen(true);
+      showToast("Entered Full Screen Mode • Press ESC to exit");
+    } else {
+      if (document.exitFullscreen && document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+      setIsFullscreen(false);
+      showToast("Exited Full Screen Mode");
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
   // Toast feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -294,77 +322,123 @@ function MessagesContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fbf9f5] flex flex-col">
-      {/* Navbar */}
-      <Navbar onOpenLoginModal={() => setLoginModalOpen(true)} />
+    <main className="h-screen w-screen bg-[#070e0a] text-[#f5f9f6] flex flex-col relative selection:bg-[#c79e4d] selection:text-[#0b1510] overflow-hidden">
+      {/* Fixed KGEC Historic Library Watercolor Background - Crisp, Vibrant & Luminous */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 w-screen h-screen z-0 pointer-events-none overflow-hidden select-none"
+      >
+        <img
+          src="/kgec-library.jpg"
+          alt="KGEC Historic Academic Library Watercolor Artwork"
+          className="w-full h-full object-cover object-[center_35%] scale-[1.01] filter brightness-95 contrast-[1.04]"
+        />
+        {/* Semi-transparent protective veil matching home page */}
+        <div className="absolute inset-0 bg-[#070e0a]/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#070e0a]/75 via-transparent to-[#070e0a]/80" />
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_40%,transparent_40%,rgba(7,14,10,0.55)_100%)]" />
+      </div>
 
-      {/* Main Messaging Layout */}
-      <div className="flex-1 pt-[68px] flex overflow-hidden h-[calc(100vh)]">
-        {/* Left: Conversations Sidebar */}
-        <div
-          className={`${
-            isMobileViewingChat ? "hidden md:flex" : "flex"
-          } w-full md:w-auto h-full`}
-        >
-          <ConversationList
-            conversations={conversations}
-            activeConvId={activeConvId}
-            onSelectConversation={handleSelectConversation}
-            onOpenNewChat={() => setNewChatModalOpen(true)}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
-          />
+      {/* Ambient Lighting Glow Orb */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-[#c79e4d]/10 rounded-full blur-3xl pointer-events-none z-0"></div>
+
+      {/* Navbar - hidden in full screen mode for maximum canvas view */}
+      {!isFullscreen && (
+        <div className="relative z-30">
+          <Navbar onOpenLoginModal={() => setLoginModalOpen(true)} />
         </div>
+      )}
 
-        {/* Center: Chat Window */}
+      {/* Main Messaging Floating Glass Console - Shifted slightly upward with perfect clearance below navbar */}
+      <div
+        className={`flex-1 min-h-0 flex overflow-hidden relative z-10 transition-all duration-300 ${
+          isFullscreen
+            ? "fixed inset-0 z-50 p-0 m-0 w-screen h-screen bg-[#070e0a]"
+            : "pt-20 sm:pt-24 md:pt-[102px] pb-3 sm:pb-4 lg:pb-5 px-2 sm:px-4 lg:px-6 h-screen"
+        }`}
+      >
         <div
-          className={`${
-            !isMobileViewingChat ? "hidden md:flex" : "flex"
-          } flex-1 h-full min-w-0`}
+          className={`w-full h-full mx-auto backdrop-blur-xl bg-[#070e0a]/20 overflow-hidden flex flex-row relative transition-all duration-300 ${
+            isFullscreen
+              ? "max-w-none rounded-none border-0"
+              : "max-w-[1700px] rounded-2xl sm:rounded-3xl border border-white/20 sm:border-[#c79e4d]/35 shadow-[0_16px_48px_0_rgba(0,0,0,0.45)]"
+          }`}
         >
-          {activeConversation ? (
-            <ChatWindow
-              conversation={activeConversation}
-              onSendMessage={handleSendMessage}
-              onBackMobile={() => setIsMobileViewingChat(false)}
-              onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-              onStartCall={handleStartCall}
-              onOpenSharePyq={() => setSharePyqModalOpen(true)}
-              onOpenShareCode={() => setShareCodeModalOpen(true)}
-              onReaction={handleReaction}
-              isTyping={isTyping}
-              onDownloadAttachment={handleDownloadAttachment}
+          {/* Top Gold Shimmer Highlight Line (when in windowed floating mode) */}
+          {!isFullscreen && (
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#deb86d]/40 to-transparent z-30 pointer-events-none"></div>
+          )}
+
+          {/* Left: Conversations Sidebar */}
+          <div
+            className={`${
+              isMobileViewingChat ? "hidden md:flex" : "flex"
+            } w-full md:w-auto h-full shrink-0`}
+          >
+            <ConversationList
+              conversations={conversations}
+              activeConvId={activeConvId}
+              onSelectConversation={handleSelectConversation}
+              onOpenNewChat={() => setNewChatModalOpen(true)}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              activeFilter={activeFilter}
+              setActiveFilter={setActiveFilter}
+              isFullscreen={isFullscreen}
+              onToggleFullscreen={toggleFullscreen}
             />
-          ) : (
-            <div className="flex-1 flex items-center justify-center p-6 text-center text-slate-400">
-              Select a conversation to start messaging
+          </div>
+
+          {/* Center: Chat Window */}
+          <div
+            className={`${
+              !isMobileViewingChat ? "hidden md:flex" : "flex"
+            } flex-1 h-full min-w-0`}
+          >
+            {activeConversation ? (
+              <ChatWindow
+                conversation={activeConversation}
+                onSendMessage={handleSendMessage}
+                onBackMobile={() => setIsMobileViewingChat(false)}
+                onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+                onStartCall={handleStartCall}
+                onOpenSharePyq={() => setSharePyqModalOpen(true)}
+                onOpenShareCode={() => setShareCodeModalOpen(true)}
+                onReaction={handleReaction}
+                isTyping={isTyping}
+                onDownloadAttachment={handleDownloadAttachment}
+                isFullscreen={isFullscreen}
+                onToggleFullscreen={toggleFullscreen}
+              />
+            ) : (
+              <div className="flex-1 flex items-center justify-center p-6 text-center text-[#deb86d] font-mono text-xs">
+                Select a conversation to start messaging
+              </div>
+            )}
+          </div>
+
+          {/* Right: Peer Info Drawer (Collapsible) */}
+          {sidebarOpen && activeConversation && (
+            <div className="hidden lg:flex h-full shrink-0">
+              <PeerSidebar
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+                conversation={activeConversation}
+                onTogglePin={handleTogglePin}
+                onOpenPyq={handleDownloadAttachment}
+              />
             </div>
           )}
         </div>
-
-        {/* Right: Peer Info Drawer (Collapsible) */}
-        {sidebarOpen && activeConversation && (
-          <div className="hidden lg:flex h-full">
-            <PeerSidebar
-              isOpen={sidebarOpen}
-              onClose={() => setSidebarOpen(false)}
-              conversation={activeConversation}
-              onTogglePin={handleTogglePin}
-              onOpenPyq={handleDownloadAttachment}
-            />
-          </div>
-        )}
       </div>
 
       {/* Floating Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700 animate-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#070e0a] text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-[#c79e4d]/40 animate-in slide-in-from-bottom-5 duration-200">
           <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
             <Check className="w-3.5 h-3.5" />
           </div>
-          <span className="text-xs font-medium">{toastMessage}</span>
+          <span className="text-xs font-mono font-medium text-[#fcedca]">{toastMessage}</span>
         </div>
       )}
 
@@ -405,7 +479,7 @@ function MessagesContent() {
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
       />
-    </div>
+    </main>
   );
 }
 
@@ -413,10 +487,10 @@ export default function MessagesPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#fbf9f5] flex items-center justify-center p-4">
-          <div className="text-center space-y-2">
-            <div className="w-8 h-8 rounded-full border-2 border-red-600 border-t-transparent animate-spin mx-auto"></div>
-            <p className="text-xs font-mono text-slate-500">
+        <div className="min-h-screen bg-[#060d08] flex items-center justify-center p-4">
+          <div className="text-center space-y-3">
+            <div className="w-9 h-9 rounded-full border-2 border-[#c79e4d] border-t-transparent animate-spin mx-auto"></div>
+            <p className="text-xs font-mono text-[#deb86d] uppercase tracking-widest">
               Connecting to KGEC Campus Messenger...
             </p>
           </div>

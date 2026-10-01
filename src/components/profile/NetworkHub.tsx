@@ -72,46 +72,46 @@ export default function NetworkHub({
   });
 
   return (
-    <div className="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden mb-6">
+    <div className="bg-[#070e0a]/50 backdrop-blur-xl border border-white/20 sm:border-[#c79e4d]/35 rounded-2xl shadow-xl overflow-hidden mb-6 text-white">
       {/* Network Header & Tabs */}
-      <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-5 sm:p-6 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-white/10 border border-[#c79e4d]/40 text-[#deb86d] flex items-center justify-center font-bold">
             <Users className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-xl font-heading font-bold text-slate-900">
+            <h2 className="text-xl font-serif font-bold text-white tracking-tight">
               Campus Student Network
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[#8fa597] font-mono">
               Manage connections, explore batchmates, and discover research collaborators
             </p>
           </div>
         </div>
 
         {/* Tab Buttons */}
-        <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl self-start md:self-auto text-xs font-semibold">
+        <div className="flex items-center gap-1.5 bg-[#0b1510] border border-white/20 p-1 rounded-xl self-start md:self-auto text-xs font-mono uppercase tracking-wider">
           <button
             onClick={() => setActiveTab("grow")}
-            className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer ${
               activeTab === "grow"
-                ? "bg-white text-slate-900 shadow-2xs"
-                : "text-slate-600 hover:text-slate-900"
+                ? "bg-[#c79e4d] text-[#08120c] font-bold shadow-md"
+                : "text-[#dbe7df] hover:text-[#deb86d]"
             }`}
           >
             Discover ({profiles.length - 1})
           </button>
           <button
             onClick={() => setActiveTab("invitations")}
-            className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === "invitations"
-                ? "bg-white text-slate-900 shadow-2xs"
-                : "text-slate-600 hover:text-slate-900"
+                ? "bg-[#c79e4d] text-[#08120c] font-bold shadow-md"
+                : "text-[#dbe7df] hover:text-[#deb86d]"
             }`}
           >
             <span>Invitations</span>
             {receivedRequests.length > 0 && (
-              <span className="w-4 h-4 bg-red-600 text-white rounded-full text-[10px] flex items-center justify-center font-bold">
+              <span className="w-4 h-4 bg-[#c79e4d] text-[#08120c] rounded-full text-[10px] flex items-center justify-center font-bold">
                 {receivedRequests.length}
               </span>
             )}
@@ -121,16 +121,16 @@ export default function NetworkHub({
 
       {/* Invitations Alert Banner (If pending) */}
       {receivedRequests.length > 0 && activeTab !== "invitations" && (
-        <div className="px-6 py-3 bg-red-50/70 border-b border-red-100 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-red-800">
-            <UserPlus className="w-4 h-4 text-red-600" />
+        <div className="px-6 py-3 bg-[#0e1a14] border-b border-[#c79e4d]/30 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-[#deb86d]">
+            <UserPlus className="w-4 h-4 text-[#c79e4d]" />
             <span>
               You have <strong>{receivedRequests.length} pending connection invitation(s)</strong> waiting for your approval.
             </span>
           </div>
           <button
             onClick={() => setActiveTab("invitations")}
-            className="text-xs font-bold text-red-700 hover:underline cursor-pointer"
+            className="text-xs font-mono uppercase tracking-wider font-bold text-[#deb86d] hover:underline cursor-pointer"
           >
             Review All
           </button>
@@ -140,18 +140,18 @@ export default function NetworkHub({
       {/* Tab: INVITATIONS */}
       {activeTab === "invitations" && (
         <div className="p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+          <div className="flex items-center justify-between pb-2 border-b border-white/10">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#deb86d] font-mono">
               Pending Invitations ({receivedRequests.length})
             </h3>
-            <span className="text-xs text-slate-500 font-mono">KGEC Intranet Queue</span>
+            <span className="text-xs text-[#8fa597] font-mono">KGEC Intranet Queue</span>
           </div>
 
           {receivedRequests.length === 0 ? (
             <div className="text-center py-12 space-y-2">
-              <UserCheck className="w-10 h-10 text-slate-300 mx-auto" />
-              <p className="text-sm font-semibold text-slate-700">No pending invitations</p>
-              <p className="text-xs text-slate-400">
+              <UserCheck className="w-10 h-10 text-white/20 mx-auto" />
+              <p className="text-sm font-serif font-bold text-white">No pending invitations</p>
+              <p className="text-xs text-[#8fa597] font-light">
                 You are all caught up! Explore classmates below to expand your collegiate circle.
               </p>
             </div>
@@ -160,32 +160,32 @@ export default function NetworkHub({
               {receivedRequests.map((req) => (
                 <div
                   key={req.id}
-                  className="p-4 bg-slate-50/70 border border-slate-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-slate-300 transition-colors"
+                  className="p-4 bg-[#0b1510]/80 border border-white/10 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#c79e4d]/40 transition-colors"
                 >
                   <div className="flex items-start gap-3.5">
                     <div
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${req.senderAvatarBg} text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-2xs`}
+                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${req.senderAvatarBg} text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-md border border-white/20`}
                     >
                       {req.senderAvatar}
                     </div>
 
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="text-sm font-bold text-slate-900 hover:text-red-600 cursor-pointer">
+                        <h4 className="text-sm font-serif font-bold text-white hover:text-[#deb86d] cursor-pointer">
                           {req.senderName}
                         </h4>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 bg-red-50 text-red-600 rounded border border-red-100">
+                        <span className="text-[10px] font-mono px-2 py-0.5 bg-white/10 text-[#deb86d] rounded border border-white/10">
                           {req.senderRoll}
                         </span>
-                        <span className="text-xs text-slate-400">• {req.timestamp}</span>
+                        <span className="text-xs text-[#8fa597] font-mono">• {req.timestamp}</span>
                       </div>
 
-                      <p className="text-xs text-slate-600 leading-normal max-w-xl">
+                      <p className="text-xs text-[#d4e4da] leading-normal max-w-xl font-light">
                         {req.senderHeadline}
                       </p>
 
                       {req.note && (
-                        <div className="mt-2 p-2.5 bg-white border border-slate-200/90 rounded-lg text-xs text-slate-700 italic border-l-2 border-l-red-500">
+                        <div className="mt-2 p-2.5 bg-[#070e0a] border border-[#c79e4d]/30 rounded-lg text-xs text-[#cde0d4] italic border-l-2 border-l-[#c79e4d]">
                           &quot;{req.note}&quot;
                         </div>
                       )}
@@ -195,13 +195,13 @@ export default function NetworkHub({
                   <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                     <button
                       onClick={() => onIgnoreRequest(req.id)}
-                      className="px-3.5 py-1.5 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                      className="px-3.5 py-1.5 border border-white/20 hover:bg-white/10 text-[#a4b8ab] hover:text-white rounded-lg text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                     >
                       Ignore
                     </button>
                     <button
                       onClick={() => onAcceptRequest(req.id, req.senderId)}
-                      className="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shadow-xs cursor-pointer flex items-center gap-1.5"
+                      className="px-4 py-1.5 bg-[#c79e4d] hover:bg-[#deb86d] text-[#08120c] rounded-lg text-xs font-bold font-mono uppercase tracking-wider transition-colors shadow-md cursor-pointer flex items-center gap-1.5"
                     >
                       <Check className="w-3.5 h-3.5" />
                       <span>Accept</span>
@@ -220,15 +220,15 @@ export default function NetworkHub({
           {/* Filter Bar & Search */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             {/* Department Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
               {departments.map((dept) => (
                 <button
                   key={dept.code}
                   onClick={() => setDeptFilter(dept.code)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase tracking-wider whitespace-nowrap transition-colors cursor-pointer ${
                     deptFilter === dept.code
-                      ? "bg-slate-900 text-white"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      ? "bg-[#c79e4d] text-[#08120c] font-bold shadow-md"
+                      : "bg-[#0b1510] border border-white/20 text-[#dbe7df] hover:border-[#c79e4d]"
                   }`}
                 >
                   {dept.code}
@@ -238,13 +238,13 @@ export default function NetworkHub({
 
             {/* Search Input */}
             <div className="relative sm:w-64">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-[#deb86d] absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search by name, skills or roll..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-1.5 text-xs bg-slate-50 border border-slate-200 focus:border-red-500 rounded-lg focus:outline-none"
+                className="w-full pl-9 pr-3.5 py-1.5 text-xs bg-[#0b1510] border border-white/20 focus:border-[#c79e4d] rounded-lg focus:outline-none text-white placeholder-[#8fa597] font-mono"
               />
             </div>
           </div>
@@ -259,7 +259,7 @@ export default function NetworkHub({
               return (
                 <div
                   key={p.id}
-                  className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between group"
+                  className="bg-[#0b1510]/80 border border-white/15 sm:border-[#c79e4d]/30 hover:border-[#c79e4d] rounded-2xl p-4 sm:p-5 shadow-md hover:shadow-2xl transition-all flex flex-col justify-between group"
                 >
                   <div>
                     {/* Top Row: Avatar & Status */}
@@ -267,7 +267,7 @@ export default function NetworkHub({
                       <div className="flex items-start gap-3">
                         <div
                           onClick={() => onSelectProfile(p)}
-                          className={`w-12 h-12 rounded-xl bg-gradient-to-br ${p.avatarBg} text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-xs cursor-pointer group-hover:scale-105 transition-transform`}
+                          className={`w-12 h-12 rounded-xl bg-gradient-to-br ${p.avatarBg} text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-md border border-white/20 cursor-pointer group-hover:scale-105 transition-transform`}
                         >
                           {p.avatarText}
                         </div>
@@ -275,28 +275,28 @@ export default function NetworkHub({
                         <div>
                           <div
                             onClick={() => onSelectProfile(p)}
-                            className="text-sm font-bold text-slate-900 hover:text-red-600 cursor-pointer flex items-center gap-1.5"
+                            className="text-sm font-serif font-bold text-white hover:text-[#deb86d] cursor-pointer flex items-center gap-1.5"
                           >
                             <span>{p.name}</span>
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">
+                            <span className="text-[10px] font-mono px-2 py-0.5 bg-white/10 text-[#deb86d] rounded border border-white/10">
                               {p.rollNumber}
                             </span>
                           </div>
-                          <div className="text-[11px] text-slate-500 font-medium">
+                          <div className="text-[11px] text-[#8fa597] font-mono">
                             {p.department} · {p.batchYear}
                           </div>
                         </div>
                       </div>
 
                       {p.jobStatus.isOpenToWork && (
-                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-semibold shrink-0">
+                        <span className="px-2 py-0.5 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 rounded-full text-[10px] font-mono font-semibold shrink-0">
                           Open to Work
                         </span>
                       )}
                     </div>
 
                     {/* Headline */}
-                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-3">
+                    <p className="text-xs text-[#d4e4da] line-clamp-2 leading-relaxed mb-3 font-light">
                       {p.headline}
                     </p>
 
@@ -305,7 +305,7 @@ export default function NetworkHub({
                       {p.skills.slice(0, 3).map((skill) => (
                         <span
                           key={skill.id}
-                          className="text-[10px] px-2 py-0.5 bg-slate-50 border border-slate-200 text-slate-700 rounded-md font-mono"
+                          className="text-[10px] px-2 py-0.5 bg-white/10 border border-white/10 text-[#deb86d] rounded-md font-mono"
                         >
                           {skill.name}
                         </span>
@@ -314,18 +314,18 @@ export default function NetworkHub({
                   </div>
 
                   {/* Actions */}
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
                     <button
                       onClick={() => onSelectProfile(p)}
-                      className="text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+                      className="text-xs font-mono uppercase tracking-wider text-[#a4b8ab] hover:text-[#deb86d] cursor-pointer"
                     >
-                      View Full Profile
+                      View Profile
                     </button>
 
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => onMessageClick(p)}
-                        className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                        className="p-1.5 text-[#a4b8ab] hover:text-[#deb86d] hover:bg-white/10 rounded-lg transition-colors cursor-pointer border border-white/10"
                         title="Direct Message"
                       >
                         <MessageSquare className="w-4 h-4" />
@@ -334,23 +334,23 @@ export default function NetworkHub({
                       {isConnected ? (
                         <button
                           onClick={() => onConnectClick(p)}
-                          className="px-3.5 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                          className="px-3.5 py-1.5 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-mono uppercase tracking-wider flex items-center gap-1 cursor-pointer"
                         >
-                          <Check className="w-3.5 h-3.5" />
+                          <Check className="w-3.5 h-3.5 text-emerald-400" />
                           <span>Connected</span>
                         </button>
                       ) : isPending ? (
                         <button
                           onClick={() => onConnectClick(p)}
-                          className="px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                          className="px-3.5 py-1.5 bg-[#1b1509] text-amber-300 border border-amber-500/40 rounded-lg text-xs font-mono uppercase tracking-wider flex items-center gap-1 cursor-pointer"
                         >
-                          <Clock className="w-3.5 h-3.5" />
+                          <Clock className="w-3.5 h-3.5 text-amber-400" />
                           <span>Pending</span>
                         </button>
                       ) : (
                         <button
                           onClick={() => onConnectClick(p)}
-                          className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
+                          className="px-3.5 py-1.5 bg-[#c79e4d] hover:bg-[#deb86d] text-[#08120c] rounded-lg text-xs font-bold font-mono uppercase tracking-wider flex items-center gap-1 transition-colors shadow-md cursor-pointer"
                         >
                           <UserPlus className="w-3.5 h-3.5" />
                           <span>Connect</span>

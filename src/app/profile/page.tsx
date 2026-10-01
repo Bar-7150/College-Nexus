@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import FixedCampusBackground from "@/components/FixedCampusBackground";
 import Footer from "@/components/Footer";
 import LoginModal from "@/components/LoginModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
@@ -337,89 +338,98 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fbf9f5] text-[#1a1a1a] relative selection:bg-[#b93a32] selection:text-white pt-[68px]">
-      {/* Primary Site Navbar */}
+    <main className="min-h-screen bg-[#070e0a] text-[#f5f9f6] relative selection:bg-[#c79e4d] selection:text-[#0b1510] flex flex-col justify-between overflow-x-hidden">
+      {/* Global Fixed Campus Background with cross-fades matching home page */}
+      <FixedCampusBackground />
+
+      {/* Primary Site Floating Navbar */}
       <Navbar onOpenLoginModal={() => setLoginModalOpen(true)} />
 
-      {/* Profile Switcher & Secondary Sub-Nav Bar */}
-      <div className="py-3 bg-white border-b border-slate-200/80 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col md:flex-row md:items-center justify-between gap-3">
-          {/* Breadcrumb / Section Label */}
-          <div className="flex items-center gap-2 text-xs">
-            <Link
-              href="/"
-              className="text-slate-500 hover:text-red-600 transition-colors flex items-center gap-1 font-medium"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Campus Intranet</span>
-            </Link>
-            <span className="text-slate-300">/</span>
-            <span className="font-bold text-slate-800 uppercase tracking-wider font-mono">
-              Student Network & Profiles
-            </span>
-          </div>
+      {/* Profile Switcher & Secondary Sub-Nav Bar (Clean clearance below floating navbar) */}
+      <div className="pt-24 sm:pt-28 md:pt-[102px] relative z-20">
+        <div className="py-3.5 bg-[#070e0a]/25 backdrop-blur-xl border-b border-white/20 sm:border-[#c79e4d]/35 relative">
+          {/* Top Gold Shimmer Highlight Bar */}
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#deb86d]/30 to-transparent pointer-events-none"></div>
 
-          {/* Top Controls: Profile Switcher & Tabs */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Tab Toggle: Profile View vs Network Directory */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
-              <button
-                onClick={() => setActiveTab("profile")}
-                className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
-                  activeTab === "profile"
-                    ? "bg-white text-slate-900 shadow-2xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            {/* Breadcrumb / Section Label */}
+            <div className="flex items-center gap-2 text-xs">
+              <Link
+                href="/"
+                className="text-[#a4b8ab] hover:text-[#deb86d] transition-colors flex items-center gap-1 font-mono uppercase tracking-wider text-[11px]"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-red-600" />
-                <span>Profile View</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab("network")}
-                className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
-                  activeTab === "network"
-                    ? "bg-white text-slate-900 shadow-2xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <Users className="w-3.5 h-3.5 text-blue-600" />
-                <span>Campus Network ({profiles.length})</span>
-                {receivedRequests.length > 0 && (
-                  <span className="w-2 h-2 rounded-full bg-red-600 animate-ping"></span>
-                )}
-              </button>
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Campus Intranet</span>
+              </Link>
+              <span className="text-white/20">/</span>
+              <span className="font-bold text-[#deb86d] uppercase tracking-wider font-mono text-[11px] flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-[#deb86d]" />
+                <span>Student Network & Profiles</span>
+              </span>
             </div>
 
-            {/* Profile Switcher Dropdown (To test viewing different students) */}
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-xl text-xs">
-              <span className="text-slate-500 font-medium hidden sm:inline">
-                Viewing:
-              </span>
-              <select
-                value={viewedProfileId}
-                onChange={(e) => {
-                  setViewedProfileId(e.target.value);
-                  setActiveTab("profile");
-                }}
-                className="bg-transparent text-slate-800 font-bold focus:outline-none cursor-pointer"
-              >
-                {profiles.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} {p.id === currentUserId ? "(You - CSE)" : `(${p.department})`}
-                  </option>
-                ))}
-              </select>
+            {/* Top Controls: Profile Switcher & Tabs */}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Tab Toggle: Profile View vs Network Directory */}
+              <div className="flex items-center bg-[#070e0a]/40 backdrop-blur-md border border-white/20 sm:border-[#c79e4d]/35 p-1 rounded-xl text-xs font-mono uppercase tracking-wider shadow-inner">
+                <button
+                  onClick={() => setActiveTab("profile")}
+                  className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                    activeTab === "profile"
+                      ? "bg-[#c79e4d] text-[#08120c] font-bold shadow-md"
+                      : "text-[#dbe7df] hover:text-[#deb86d]"
+                  }`}
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Profile View</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("network")}
+                  className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                    activeTab === "network"
+                      ? "bg-[#c79e4d] text-[#08120c] font-bold shadow-md"
+                      : "text-[#dbe7df] hover:text-[#deb86d]"
+                  }`}
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Campus Network ({profiles.length})</span>
+                  {receivedRequests.length > 0 && (
+                    <span className="w-2 h-2 rounded-full bg-[#c79e4d] animate-ping"></span>
+                  )}
+                </button>
+              </div>
+
+              {/* Profile Switcher Dropdown (To test viewing different students) */}
+              <div className="flex items-center gap-2 bg-[#070e0a]/40 backdrop-blur-md border border-white/20 hover:border-[#c79e4d]/40 px-3 py-1.5 rounded-xl text-xs font-mono shadow-inner transition-colors">
+                <span className="text-[#8fa597] hidden sm:inline">
+                  Viewing:
+                </span>
+                <select
+                  value={viewedProfileId}
+                  onChange={(e) => {
+                    setViewedProfileId(e.target.value);
+                    setActiveTab("profile");
+                  }}
+                  className="bg-transparent text-[#deb86d] font-bold focus:outline-none cursor-pointer"
+                >
+                  {profiles.map((p) => (
+                    <option key={p.id} value={p.id} className="bg-[#070e0a] text-white">
+                      {p.name} {p.id === currentUserId ? "(You - CSE)" : `(${p.department})`}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6">
+      <div id="heritage" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 w-full">
         {/* Toast Alert */}
         {toastMessage && (
-          <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs px-4 py-3 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
+          <div className="fixed bottom-6 right-6 z-50 bg-[#070e0a]/95 backdrop-blur-xl text-white text-xs px-4 py-3 rounded-2xl shadow-2xl border border-[#c79e4d]/50 flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
             <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
             <span className="font-medium">{toastMessage}</span>
           </div>
@@ -427,23 +437,25 @@ export default function ProfilePage() {
 
         {/* Tab 1: CAMPUS NETWORK & INVITATIONS */}
         {activeTab === "network" ? (
-          <NetworkHub
-            profiles={profiles}
-            currentProfile={currentLoggedInUser}
-            receivedRequests={receivedRequests}
-            sentRequests={sentRequests}
-            onAcceptRequest={handleAcceptRequest}
-            onIgnoreRequest={handleIgnoreRequest}
-            onConnectClick={handleConnectClick}
-            onSelectProfile={(p) => {
-              setViewedProfileId(p.id);
-              setActiveTab("profile");
-            }}
-            onMessageClick={(p) => {
-              setTargetPeer(p);
-              setMessageModalOpen(true);
-            }}
-          />
+          <div id="explorer">
+            <NetworkHub
+              profiles={profiles}
+              currentProfile={currentLoggedInUser}
+              receivedRequests={receivedRequests}
+              sentRequests={sentRequests}
+              onAcceptRequest={handleAcceptRequest}
+              onIgnoreRequest={handleIgnoreRequest}
+              onConnectClick={handleConnectClick}
+              onSelectProfile={(p) => {
+                setViewedProfileId(p.id);
+                setActiveTab("profile");
+              }}
+              onMessageClick={(p) => {
+                setTargetPeer(p);
+                setMessageModalOpen(true);
+              }}
+            />
+          </div>
         ) : (
           /* Tab 2: STUDENT PROFILE VIEW (LinkedIn Style) */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -469,42 +481,49 @@ export default function ProfilePage() {
               />
 
               {/* About Section */}
-              <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs">
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
-                  <h2 className="text-lg font-heading font-bold text-slate-900">
+              <div className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#070e0a]/20 hover:bg-[#070e0a]/25 backdrop-blur-xl border border-white/20 sm:border-[#c79e4d]/35 hover:border-[#c79e4d] p-5 sm:p-7 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-2xl transition-all duration-300 text-white">
+                {/* Top Gold Shimmer Bar */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#deb86d]/40 to-transparent group-hover:via-[#deb86d] transition-all duration-500 z-20 pointer-events-none"></div>
+
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+                  <h2 className="text-lg font-serif font-bold text-white tracking-tight">
                     About {activeProfile.name}
                   </h2>
                   {isViewingSelf && (
                     <button
                       onClick={() => setEditProfileModalOpen(true)}
-                      className="text-xs font-semibold text-red-600 hover:underline"
+                      className="text-xs font-mono uppercase tracking-wider font-semibold text-[#deb86d] hover:underline cursor-pointer"
                     >
                       Edit Bio
                     </button>
                   )}
                 </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+                <p className="text-xs sm:text-sm text-[#d4e4da] leading-relaxed whitespace-pre-line font-light">
                   {activeProfile.about}
                 </p>
               </div>
 
               {/* Activity & Achievements Feed */}
-              <AchievementsFeed
-                posts={activeProfile.achievements}
-                currentProfile={currentLoggedInUser}
-                isSelf={isViewingSelf}
-                onAddPost={handleAddPost}
-                onReaction={handleReaction}
-                onAddComment={handleAddComment}
-                onSharePost={handleSharePost}
-              />
+              <div id="testimonials">
+                <AchievementsFeed
+                  posts={activeProfile.achievements}
+                  currentProfile={currentLoggedInUser}
+                  isSelf={isViewingSelf}
+                  onAddPost={handleAddPost}
+                  onReaction={handleReaction}
+                  onAddComment={handleAddComment}
+                  onSharePost={handleSharePost}
+                />
+              </div>
 
               {/* Experience Section */}
-              <ExperienceSection
-                experience={activeProfile.experience}
-                isSelf={isViewingSelf}
-                onAddExperience={handleAddExperience}
-              />
+              <div id="explorer">
+                <ExperienceSection
+                  experience={activeProfile.experience}
+                  isSelf={isViewingSelf}
+                  onAddExperience={handleAddExperience}
+                />
+              </div>
 
               {/* Education Section */}
               <EducationSection
@@ -525,84 +544,90 @@ export default function ProfilePage() {
             {/* Right Column / Sidebar Widgets (4 cols on large screens) */}
             <div className="lg:col-span-4 space-y-6">
               {/* Analytics Card (Private to user or shown on self) */}
-              <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-                <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
-                    <TrendingUp className="w-3.5 h-3.5 text-red-600" />
+              <div className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#070e0a]/20 hover:bg-[#070e0a]/25 backdrop-blur-xl border border-white/20 sm:border-[#c79e4d]/35 hover:border-[#c79e4d] p-5 sm:p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-2xl transition-all duration-300 text-white">
+                {/* Top Gold Shimmer Bar */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#deb86d]/40 to-transparent group-hover:via-[#deb86d] transition-all duration-500 z-20 pointer-events-none"></div>
+
+                <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#deb86d] font-mono flex items-center gap-1.5">
+                    <TrendingUp className="w-3.5 h-3.5 text-[#deb86d]" />
                     <span>Campus Analytics</span>
                   </h3>
-                  <span className="text-[10px] text-slate-400 font-mono">
+                  <span className="text-[10px] text-[#8fa597] font-mono">
                     {isViewingSelf ? "Private to you" : "Public signals"}
                   </span>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-100 flex items-center justify-between">
+                  <div className="p-3.5 bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-xs rounded-xl border border-white/10 hover:border-[#c79e4d]/30 transition-colors flex items-center justify-between">
                     <div>
-                      <div className="text-base font-bold text-slate-900">
+                      <div className="text-base font-serif font-bold text-white">
                         {activeProfile.stats.profileViews}
                       </div>
-                      <div className="text-[11px] text-slate-500">
+                      <div className="text-[11px] text-[#8fa597]">
                         Profile views past 7 days
                       </div>
                     </div>
-                    <Eye className="w-4 h-4 text-slate-400" />
+                    <Eye className="w-4 h-4 text-[#deb86d]" />
                   </div>
 
-                  <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-100 flex items-center justify-between">
+                  <div className="p-3.5 bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-xs rounded-xl border border-white/10 hover:border-[#c79e4d]/30 transition-colors flex items-center justify-between">
                     <div>
-                      <div className="text-base font-bold text-slate-900">
+                      <div className="text-base font-serif font-bold text-white">
                         {activeProfile.stats.postImpressions.toLocaleString()}
                       </div>
-                      <div className="text-[11px] text-slate-500">
+                      <div className="text-[11px] text-[#8fa597]">
                         Achievement post impressions
                       </div>
                     </div>
-                    <Flame className="w-4 h-4 text-red-500" />
+                    <Flame className="w-4 h-4 text-[#deb86d]" />
                   </div>
 
-                  <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-100 flex items-center justify-between">
+                  <div className="p-3.5 bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-xs rounded-xl border border-white/10 hover:border-[#c79e4d]/30 transition-colors flex items-center justify-between">
                     <div>
-                      <div className="text-base font-bold text-slate-900">
+                      <div className="text-base font-serif font-bold text-white">
                         {activeProfile.stats.searchAppearances}
                       </div>
-                      <div className="text-[11px] text-slate-500">
+                      <div className="text-[11px] text-[#8fa597]">
                         Vault & placement search appearances
                       </div>
                     </div>
-                    <Search className="w-4 h-4 text-slate-400" />
+                    <Search className="w-4 h-4 text-[#deb86d]" />
                   </div>
                 </div>
               </div>
 
               {/* People You May Know / Suggested Peers */}
-              <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-blue-600" />
+              <div className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#070e0a]/20 hover:bg-[#070e0a]/25 backdrop-blur-xl border border-white/20 sm:border-[#c79e4d]/35 hover:border-[#c79e4d] p-5 sm:p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-2xl transition-all duration-300 text-white">
+                {/* Top Gold Shimmer Bar */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#deb86d]/40 to-transparent group-hover:via-[#deb86d] transition-all duration-500 z-20 pointer-events-none"></div>
+
+                <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/10">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#deb86d] font-mono flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-[#deb86d]" />
                     <span>KGEC Batchmates</span>
                   </h3>
                   <button
                     onClick={() => setActiveTab("network")}
-                    className="text-xs font-bold text-red-600 hover:underline"
+                    className="text-xs font-mono uppercase tracking-wider text-[#deb86d] hover:underline cursor-pointer"
                   >
                     See all
                   </button>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3.5">
                   {profiles
                     .filter((p) => p.id !== activeProfile.id)
                     .slice(0, 3)
                     .map((peer) => (
                       <div
                         key={peer.id}
-                        className="flex items-start justify-between gap-3"
+                        className="flex items-start justify-between gap-3 p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors"
                       >
                         <div className="flex items-start gap-2.5">
                           <div
                             onClick={() => setViewedProfileId(peer.id)}
-                            className={`w-9 h-9 rounded-full bg-gradient-to-br ${peer.avatarBg} text-white font-bold text-xs flex items-center justify-center shrink-0 cursor-pointer shadow-2xs`}
+                            className={`w-9 h-9 rounded-full bg-gradient-to-br ${peer.avatarBg} text-white font-bold text-xs flex items-center justify-center shrink-0 cursor-pointer shadow-sm border border-white/20`}
                           >
                             {peer.avatarText}
                           </div>
@@ -610,11 +635,11 @@ export default function ProfilePage() {
                           <div>
                             <h4
                               onClick={() => setViewedProfileId(peer.id)}
-                              className="text-xs font-bold text-slate-900 hover:text-red-600 cursor-pointer"
+                              className="text-xs font-serif font-bold text-white hover:text-[#deb86d] cursor-pointer"
                             >
                               {peer.name}
                             </h4>
-                            <p className="text-[11px] text-slate-500 line-clamp-1">
+                            <p className="text-[11px] text-[#8fa597] font-mono line-clamp-1">
                               {peer.department} · {peer.batchYear}
                             </p>
                           </div>
@@ -622,12 +647,12 @@ export default function ProfilePage() {
 
                         <button
                           onClick={() => handleConnectClick(peer)}
-                          className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer shrink-0 ${
+                          className={`text-xs px-2.5 py-1 rounded-lg font-mono uppercase tracking-wider font-semibold transition-colors cursor-pointer shrink-0 ${
                             peer.connectionStatus === "connected"
-                              ? "bg-slate-100 text-slate-600"
+                              ? "bg-emerald-950/80 text-emerald-300 border border-emerald-500/40"
                               : peer.connectionStatus === "pending"
-                              ? "bg-amber-50 text-amber-700 border border-amber-200"
-                              : "border border-red-600 text-red-600 hover:bg-red-50"
+                              ? "bg-amber-950/80 text-amber-300 border border-amber-500/40"
+                              : "border border-[#c79e4d] text-[#deb86d] hover:bg-[#c79e4d] hover:text-[#08120c]"
                           }`}
                         >
                           {peer.connectionStatus === "connected"
@@ -642,38 +667,41 @@ export default function ProfilePage() {
               </div>
 
               {/* Trending Campus Topics */}
-              <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-                <div className="flex items-center gap-1.5 mb-3 pb-2 border-b border-slate-100">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+              <div className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#070e0a]/20 hover:bg-[#070e0a]/25 backdrop-blur-xl border border-white/20 sm:border-[#c79e4d]/35 hover:border-[#c79e4d] p-5 sm:p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-2xl transition-all duration-300 text-white">
+                {/* Top Gold Shimmer Bar */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#deb86d]/40 to-transparent group-hover:via-[#deb86d] transition-all duration-500 z-20 pointer-events-none"></div>
+
+                <div className="flex items-center gap-1.5 mb-3 pb-2 border-b border-white/10">
+                  <Sparkles className="w-3.5 h-3.5 text-[#deb86d]" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#deb86d] font-mono">
                     Campus Discussion Trends
                   </h3>
                 </div>
 
-                <div className="space-y-2.5 text-xs">
-                  <div>
-                    <span className="font-bold text-slate-800 hover:text-red-600 cursor-pointer">
+                <div className="space-y-3 text-xs">
+                  <div className="p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors">
+                    <span className="font-bold text-white hover:text-[#deb86d] cursor-pointer font-serif">
                       #SmartIndiaHackathon2025
                     </span>
-                    <p className="text-[11px] text-slate-400">14 teams qualified from KGEC</p>
+                    <p className="text-[11px] text-[#8fa597] font-mono mt-0.5">14 teams qualified from KGEC</p>
                   </div>
-                  <div>
-                    <span className="font-bold text-slate-800 hover:text-red-600 cursor-pointer">
+                  <div className="p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors">
+                    <span className="font-bold text-white hover:text-[#deb86d] cursor-pointer font-serif">
                       #MicrosoftPlacementDrives
                     </span>
-                    <p className="text-[11px] text-slate-400">On-campus shortlist declared</p>
+                    <p className="text-[11px] text-[#8fa597] font-mono mt-0.5">On-campus shortlist declared</p>
                   </div>
-                  <div>
-                    <span className="font-bold text-slate-800 hover:text-red-600 cursor-pointer">
+                  <div className="p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors">
+                    <span className="font-bold text-white hover:text-[#deb86d] cursor-pointer font-serif">
                       #MAKAUTEndSemSchedule
                     </span>
-                    <p className="text-[11px] text-slate-400">Routine released for 6th & 8th Sem</p>
+                    <p className="text-[11px] text-[#8fa597] font-mono mt-0.5">Routine released for 6th & 8th Sem</p>
                   </div>
-                  <div>
-                    <span className="font-bold text-slate-800 hover:text-red-600 cursor-pointer">
+                  <div className="p-2.5 rounded-xl hover:bg-white/[0.04] transition-colors">
+                    <span className="font-bold text-white hover:text-[#deb86d] cursor-pointer font-serif">
                       #Espektro2026
                     </span>
-                    <p className="text-[11px] text-slate-400">Annual Technical Fest announced</p>
+                    <p className="text-[11px] text-[#8fa597] font-mono mt-0.5">Annual Technical Fest announced</p>
                   </div>
                 </div>
               </div>
