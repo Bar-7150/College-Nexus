@@ -229,6 +229,18 @@ function ResourceRow({ resource, canDelete, reported, onAccess, onReport, onDele
 }
 
 function PdfViewer({ resource, onClose }: { resource: VaultItem; onClose: () => void }) {
+  const [useGoogleViewer, setUseGoogleViewer] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Convert Cloudinary image/upload → raw/upload so PDFs are served correctly
+  const rawPdfUrl = resource.fileUrl
+    ? resource.fileUrl.replace("/image/upload/", "/raw/upload/")
+    : "";
+
+  const iframeSrc = useGoogleViewer
+    ? `https://docs.google.com/viewer?url=${encodeURIComponent(rawPdfUrl)}&embedded=true`
+    : `${rawPdfUrl}#toolbar=0&navpanes=0&scrollbar=1`;
+
   useEffect(() => {
     const block = (event: MouseEvent) => event.preventDefault();
     const blockSave = (event: KeyboardEvent) => {
@@ -239,5 +251,46 @@ function PdfViewer({ resource, onClose }: { resource: VaultItem; onClose: () => 
     return () => { document.removeEventListener("contextmenu", block); document.removeEventListener("keydown", blockSave); };
   }, []);
 
-  return <div className="fixed inset-0 z-[70] flex flex-col bg-[#070e0a]" onContextMenu={(event) => event.preventDefault()}><div className="flex items-center justify-between border-b border-[#294231] bg-[#0b1710] px-4 py-3 text-white"><div><div className="text-[10px] font-mono uppercase tracking-widest text-[#deb86d]">Protected campus reader</div><h2 className="text-sm font-semibold">{resource.title}</h2></div><button onClick={onClose} className="rounded-lg border border-[#38513f] px-3 py-2 text-xs text-[#b7cbbd] hover:text-white">Close</button></div><div className="flex-1 bg-[#1b1b1b] p-2"><iframe title={resource.title} src={`${resource.fileUrl}#toolbar=0&navpanes=0&scrollbar=1`} className="h-full w-full border-0" onContextMenu={(event) => event.preventDefault()} /></div></div>;
+  return (
+    <div className="fixed inset-0 z-[70] flex flex-col bg-[#070e0a]" onContextMenu={(e) => e.preventDefault()}>
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-[#294231] bg-[#0b1710] px-4 py-3 text-white">
+        <div>
+          <div className="text-[10px] font-mono uppercase tracking-widest text-[#deb86d]">Protected campus reader</div>
+          <h2 className="text-sm font-semibold">{resource.title}</h2>
+          <p className="text-[10px] text-[#8fa597]">{resource.subjectCode} · {resource.type}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => { setUseGoogleViewer((v) => !v); setLoading(true); }}
+            className="rounded-lg border border-[#38513f] px-3 py-2 text-[11px] text-[#b7cbbd] hover:text-white"
+          >
+            {useGoogleViewer ? "Direct viewer" : "Google viewer"}
+          </button>
+          <button onClick={onClose} className="rounded-lg border border-[#38513f] px-3 py-2 text-xs text-[#b7cbbd] hover:text-white">
+            Close
+          </button>
+        </div>
+      </div>
+
+      {/* Viewer */}
+      <div className="relative flex-1 bg-[#1b1b1b] p-2">
+        {loading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-[#8fa597]">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#c79e4d] border-t-transparent" />
+            <span className="text-xs font-mono">Loading document…</span>
+          </div>
+        )}
+        <iframe
+          key={iframeSrc}
+          title={resource.title}
+          src={iframeSrc}
+          className="h-full w-full border-0"
+          onLoad={() => setLoading(false)}
+          onError={() => { setUseGoogleViewer(true); setLoading(true); }}
+          onContextMenu={(e) => e.preventDefault()}
+        />
+      </div>
+    </div>
+  );
 }

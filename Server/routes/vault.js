@@ -52,7 +52,7 @@ router.post("/resources", requireAuth, upload.single("file"), async (req, res, n
 
     cloudinaryAsset = await uploadBufferToCloudinary(req.file.buffer, {
       folder: `college-nexus/vault/${department}/${semester}/${subjectCode}`,
-      resource_type: "auto",
+      resource_type: "raw",
     });
 
     const { data: resource, error } = await supabase.from("vault_resources").insert({
