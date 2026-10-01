@@ -84,4 +84,55 @@ router.post("/resources", requireAuth, upload.single("file"), async (req, res, n
   }
 });
 
-module.exports = router;
+router.delete("/resources/:id", requireAuth, async (req, res, next) => {
+  try {
+    const resourceId = req.params.id?.trim();
+    if (!resourceId) {
+      return res.status(400).json({ success: false, error: { code: "INVALID_INPUT", message: "Resource ID is required." } });
+    }
+
+    const supabase = getSupabaseAdmin();
+
+    // Fetch the resource to verify ownership and get Cloudinary public_id
+    const { data: resource, error: fetchError } = await supabase
+      .from("vault_resources")
+      .select("id, contributor_id, cloudinary_public_id, file_url")
+      .eq("id", resourceId)
+      .maybeSingle();
+
+    if (fetchError) {
+      return res.status(500).json({ success: false, error: { code: "DATABASE_READ_FAILED", message: fetchError.message } });
+    }
+    if (!resource) {
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Resource not found." } });
+    }
+
+    // Only the contributor who uploaded it can delete it
+    if (resource.contributor_id !== req.user.id) {
+      return res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "You can only delete resources you uploaded." } });
+    }
+
+    // Delete from Cloudinary first (best-effort — don't block DB delete if Cloudinary fails)
+    if (resource.cloudinary_public_id) {
+      await deleteFromCloudinary(resource.cloudinary_public_id, "raw").catch((err) =>
+        console.warn(`⚠️ Cloudinary delete failed for ${resource.cloudinary_public_id}:`, err.message)
+      );
+    }
+
+    // Delete from Supabase
+    const { error: deleteError } = await supabase
+      .from("vault_resources")
+      .delete()
+      .eq("id", resourceId);
+
+    if (deleteError) {
+      return res.status(500).json({ success: false, error: { code: "DATABASE_DELETE_FAILED", message: deleteError.message } });
+    }
+
+    return res.status(200).json({ success: true, message: "Resource deleted successfully from Vault and Cloudinary." });
+  } catch (error) {
+    next(error);
+  }
+});
+
+module.exports = router;

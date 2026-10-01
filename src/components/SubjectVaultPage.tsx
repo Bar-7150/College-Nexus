@@ -111,6 +111,11 @@ export default function SubjectVaultPage({ code }: { code: string }) {
       setToast("Add a title and choose a file first.");
       return;
     }
+    if (!session?.access_token) {
+      setToast("Session expired. Please log in again.");
+      setLoginModalOpen(true);
+      return;
+    }
 
     setUploading(true);
     const formData = new FormData();
@@ -125,7 +130,7 @@ export default function SubjectVaultPage({ code }: { code: string }) {
     try {
       const response = await fetch(`${API_BASE}/api/vault/resources`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${session?.access_token}` },
+        headers: { Authorization: `Bearer ${session.access_token}` },
         body: formData,
       });
       const result = await response.json();
@@ -164,10 +169,28 @@ export default function SubjectVaultPage({ code }: { code: string }) {
     }
   };
 
-  const deleteResource = (resource: VaultItem) => {
+  const deleteResource = async (resource: VaultItem) => {
     if (!profile || resource.contributorRoll !== profile.rollNumber) return;
-    setResources((current) => current.filter((item) => item.id !== resource.id));
-    setToast("Your upload was removed.");
+    if (!session?.access_token) {
+      setToast("Session expired. Please log in again.");
+      setLoginModalOpen(true);
+      return;
+    }
+    try {
+      const response = await fetch(`${API_BASE}/api/vault/resources/${resource.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result?.error?.message || "Delete failed.");
+      }
+      // Remove from local state only after server confirms deletion
+      setResources((current) => current.filter((item) => item.id !== resource.id));
+      setToast("Your upload was deleted from Vault and Cloudinary.");
+    } catch (error: any) {
+      setToast(error?.message || "Failed to delete resource.");
+    }
   };
 
   return (
