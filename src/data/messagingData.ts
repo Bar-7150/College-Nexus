@@ -47,7 +47,7 @@ export interface Conversation {
   messages: DirectMessage[];
 }
 
-export const INITIAL_CONVERSATIONS: Conversation[] = [
+export const INITIAL_CONVERSATIONS: Conversation[] = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     id: "conv-priya-sharma",
     peerId: "priya-sharma",
@@ -360,7 +360,7 @@ export function parseCanFrame(buffer: Buffer): TelemetryPayload {
       },
     ],
   },
-];
+] : [];
 
 // Helper to generate dynamic responses per student
 export const PEER_SMART_RESPONSES: Record<string, string[]> = {

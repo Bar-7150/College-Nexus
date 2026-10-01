@@ -1,34 +1,43 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Users, GraduationCap, FileCheck, Banknote } from "lucide-react";
 
 export default function StatsCounter() {
+  const [visitCount, setVisitCount] = useState(0);
+
+  useEffect(() => {
+    const key = "nexus_visit_count";
+    const nextCount = Number(window.localStorage.getItem(key) || "0") + 1;
+    window.localStorage.setItem(key, String(nextCount));
+    setVisitCount(nextCount);
+  }, []);
+
   const stats = [
     {
-      star: "4.95 ★",
-      value: "3,850+",
-      label: "VERIFIED STUDENTS",
-      subtext: "KGEC Institutional Roll Numbers",
+      star: null,
+      value: String(visitCount),
+      label: "CAMPUS VISITS",
+      subtext: "Visits recorded on this browser",
       icon: Users,
     },
     {
       star: null,
-      value: "14+",
+      value: "0",
       label: "ACADEMIC DEPARTMENTS",
       subtext: "CSE, ECE, EE, ME, IT & M.Tech",
       icon: GraduationCap,
     },
     {
       star: null,
-      value: "12,500+",
+      value: "0",
       label: "ARCHIVED PYQS & NOTES",
       subtext: "Cryptographic SHA-256 Validated",
       icon: FileCheck,
     },
     {
       star: null,
-      value: "₹2.4L+",
+      value: "0",
       label: "STUDENT SAVINGS",
       subtext: "0% Commission Equipment Exchange",
       icon: Banknote,

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import AuthGuard from "@/components/auth/AuthGuard";
 import Navbar from "@/components/Navbar";
 import LoginModal from "@/components/LoginModal";
 import ConversationList from "@/components/messaging/ConversationList";
@@ -322,7 +323,11 @@ function MessagesContent() {
   };
 
   return (
-    <main className="h-screen w-screen bg-[#070e0a] text-[#f5f9f6] flex flex-col relative selection:bg-[#c79e4d] selection:text-[#0b1510] overflow-hidden">
+    <AuthGuard
+      resourceName="KGEC Encrypted Campus Messenger"
+      resourceDescription="Direct peer conversations, project squad channels, voice/video calls, and Vault PYQ exchanges are strictly encrypted and restricted to authenticated KGEC students."
+    >
+      <main className="h-screen w-screen bg-[#070e0a] text-[#f5f9f6] flex flex-col relative selection:bg-[#c79e4d] selection:text-[#0b1510] overflow-hidden">
       {/* Fixed KGEC Historic Library Watercolor Background - Crisp, Vibrant & Luminous */}
       <div
         aria-hidden="true"
@@ -480,6 +485,7 @@ function MessagesContent() {
         onClose={() => setLoginModalOpen(false)}
       />
     </main>
+  </AuthGuard>
   );
 }
 

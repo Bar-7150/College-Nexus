@@ -138,7 +138,7 @@ export interface ConnectionRequestItem {
   note?: string;
 }
 
-export const INITIAL_PROFILES: StudentProfile[] = [
+export const INITIAL_PROFILES: StudentProfile[] = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     id: "arjun-sen",
     name: "Arjun Sen",
@@ -728,9 +728,9 @@ export const INITIAL_PROFILES: StudentProfile[] = [
       searchAppearances: 110,
     },
   },
-];
+] : [];
 
-export const INITIAL_CONNECTION_REQUESTS: ConnectionRequestItem[] = [
+export const INITIAL_CONNECTION_REQUESTS: ConnectionRequestItem[] = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     id: "req-1",
     senderId: "aniket-roy",
@@ -757,4 +757,4 @@ export const INITIAL_CONNECTION_REQUESTS: ConnectionRequestItem[] = [
     mutualCount: 9,
     note: "Hey Arjun! Connecting from ECE batch. Let's discuss connecting IoT devices to your Next.js telemetry dashboard.",
   },
-];
+] : [];

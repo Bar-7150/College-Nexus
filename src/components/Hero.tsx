@@ -3,6 +3,7 @@
 import React from "react";
 import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
+import InstitutionMarks from "./InstitutionMarks";
 
 interface HeroProps {
   onOpenLoginModal?: () => void;
@@ -14,6 +15,7 @@ export default function Hero({ onOpenLoginModal }: HeroProps) {
       id="hero"
       className="relative min-h-[90vh] flex items-center pt-28 sm:pt-36 md:pt-40 pb-12 sm:pb-16 bg-transparent overflow-visible"
     >
+      <InstitutionMarks />
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         {/* Left-Aligned Hero Content: Floating seamlessly over the static MAKAUT Gate artwork */}
         <div className="max-w-3xl flex flex-col items-start">
@@ -81,7 +83,7 @@ export default function Hero({ onOpenLoginModal }: HeroProps) {
                   NETWORK NODES
                 </span>
                 <span className="text-sm font-semibold text-white block mt-0.5">
-                  3,850+ KGECians
+                  0 KGECians
                 </span>
                 <span className="text-[11px] text-[#9db2a4]">Roll Authenticated</span>
               </div>
@@ -90,7 +92,7 @@ export default function Hero({ onOpenLoginModal }: HeroProps) {
                   ACADEMIC VAULT
                 </span>
                 <span className="text-sm font-semibold text-white block mt-0.5">
-                  850+ Solved PYQs
+                  0 Solved PYQs
                 </span>
                 <span className="text-[11px] text-[#9db2a4]">SHA-256 Validated</span>
               </div>

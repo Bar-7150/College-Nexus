@@ -2,6 +2,7 @@
 
 import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 function MessagingRedirect() {
   const router = useRouter();
@@ -30,7 +31,8 @@ function MessagingRedirect() {
 
 export default function MessagingPage() {
   return (
-    <Suspense
+    <AuthGuard resourceName="KGEC Campus Messenger">
+      <Suspense
       fallback={
         <div className="min-h-screen bg-[#060d08] flex items-center justify-center p-4">
           <div className="text-center space-y-3">
@@ -43,6 +45,7 @@ export default function MessagingPage() {
       }
     >
       <MessagingRedirect />
-    </Suspense>
+      </Suspense>
+    </AuthGuard>
   );
 }

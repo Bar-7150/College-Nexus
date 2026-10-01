@@ -77,7 +77,7 @@ export default function CardShowcase() {
         {/* Modern Tab Bar */}
         <div className="flex overflow-x-auto gap-2 p-1.5 bg-slate-200/70 rounded-xl mb-8 w-max max-w-full">
           {[
-            { id: "vault", label: "ACADEMIC VAULT CARDS", count: "850+ PYQs" },
+            { id: "vault", label: "ACADEMIC VAULT CARDS", count: "0 PYQs" },
             { id: "notices", label: "THE BOARD NOTICES", count: "4 Circulars" },
             { id: "lostfound", label: "LOST & FOUND RECOVERY", count: "4 Active" },
             { id: "marketplace", label: "MARKETPLACE LISTINGS", count: "4 Items" },

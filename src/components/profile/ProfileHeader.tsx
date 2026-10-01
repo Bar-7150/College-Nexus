@@ -20,6 +20,7 @@ import {
   MoreHorizontal,
   Bookmark,
   Award,
+  BadgeCheck,
 } from "lucide-react";
 
 interface ProfileHeaderProps {
@@ -30,6 +31,8 @@ interface ProfileHeaderProps {
   onEditProfileClick: () => void;
   onOpenJobPreferencesClick: () => void;
   onShareProfileClick: () => void;
+  isInstitutionVerified?: boolean;
+  onOpenVerificationClick?: () => void;
 }
 
 export default function ProfileHeader({
@@ -40,6 +43,8 @@ export default function ProfileHeader({
   onEditProfileClick,
   onOpenJobPreferencesClick,
   onShareProfileClick,
+  isInstitutionVerified = false,
+  onOpenVerificationClick,
 }: ProfileHeaderProps) {
   const [openToDropdownOpen, setOpenToDropdownOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
@@ -309,6 +314,15 @@ export default function ProfileHeader({
                 ({profile.pronouns})
               </span>
             )}
+                {isInstitutionVerified ? (
+                  <span className="flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-950/50 px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-emerald-300">
+                    <BadgeCheck className="h-3.5 w-3.5" /> Verified
+                  </span>
+                ) : isSelf && onOpenVerificationClick ? (
+                  <button onClick={onOpenVerificationClick} className="rounded-full border border-[#c79e4d]/40 bg-[#070e0a]/70 px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-[#deb86d] hover:bg-[#c79e4d]/15">
+                    Verify profile
+                  </button>
+                ) : null}
 
             {/* Verified Student Seal */}
             <div className="flex items-center gap-1 px-2.5 py-0.5 bg-[#070e0a]/70 text-[#deb86d] border border-[#c79e4d]/40 rounded-full text-[11px] font-mono font-medium shadow-xs">

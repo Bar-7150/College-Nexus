@@ -2,6 +2,7 @@
 
 import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 function PublicRedirect() {
   const router = useRouter();
@@ -26,7 +27,8 @@ function PublicRedirect() {
 
 export default function PublicPage() {
   return (
-    <Suspense
+    <AuthGuard resourceName="KGEC Public Student Profile">
+      <Suspense
       fallback={
         <div className="min-h-screen bg-[#060d08] flex items-center justify-center p-4">
           <div className="text-center space-y-3">
@@ -39,6 +41,7 @@ export default function PublicPage() {
       }
     >
       <PublicRedirect />
-    </Suspense>
+      </Suspense>
+    </AuthGuard>
   );
 }

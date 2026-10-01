@@ -9,7 +9,7 @@ export default function HeritageSection() {
     {
       module: "MODULE 01",
       title: "The Academic Vault",
-      tag: "850+ SOLVED PYQS",
+      tag: "0 SOLVED PYQS",
       desc: "Taxonomy-driven digital archive. Direct navigation from Department (CSE, ECE, EE, ME, IT) down to Semester and Subject Code with SHA-256 duplicate guards.",
       icon: BookOpen,
       link: "#explorer",
@@ -63,7 +63,7 @@ export default function HeritageSection() {
                 href="#explorer"
                 className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#070e0a]/60 hover:bg-[#c79e4d] text-[#deb86d] hover:text-[#08120c] border border-[#c79e4d]/50 hover:border-[#c79e4d] rounded-full text-xs font-mono uppercase tracking-wider transition-all duration-300 backdrop-blur-md shadow-md"
               >
-                <span>Explore All 850+ Campus Archives</span>
+                <span>Explore Campus Archives</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </a>
             </div>

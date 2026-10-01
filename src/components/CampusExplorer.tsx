@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 import {
   MOCK_VAULT_ITEMS,
   MOCK_NOTICES,
@@ -37,13 +39,22 @@ import {
 
 interface CampusExplorerProps {
   onOpenLoginModal?: () => void;
+  initialCategory?: "ALL" | "VAULT" | "NOTICES" | "LOSTFOUND" | "MARKETPLACE" | "CLUBS";
+  initialDeptFilter?: string;
+  beforeFilters?: React.ReactNode;
 }
 
-export default function CampusExplorer({ onOpenLoginModal }: CampusExplorerProps) {
+export default function CampusExplorer({
+  onOpenLoginModal,
+  initialCategory = "ALL",
+  initialDeptFilter = "ALL",
+  beforeFilters,
+}: CampusExplorerProps) {
+    const { profile } = useAuth();
   const [activeCategory, setActiveCategory] = useState<
     "ALL" | "VAULT" | "NOTICES" | "LOSTFOUND" | "MARKETPLACE" | "CLUBS"
-  >("ALL");
-  const [deptFilter, setDeptFilter] = useState<string>("ALL");
+  >(initialCategory);
+  const [deptFilter, setDeptFilter] = useState<string>(initialDeptFilter);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedClaimItem, setSelectedClaimItem] = useState<LostFoundItem | null>(null);
@@ -213,19 +224,21 @@ export default function CampusExplorer({ onOpenLoginModal }: CampusExplorerProps
           </div>
         </ScrollReveal>
 
+        {beforeFilters}
+
         {/* Category Filter Pills (Horizontal Pill Bar with Frosted Glass) */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
             {[
-              { id: "ALL", label: "All Resources" },
-              { id: "VAULT", label: "Academic Vault" },
-              { id: "NOTICES", label: "Official Notices" },
-              { id: "LOSTFOUND", label: "Lost & Found" },
-              { id: "MARKETPLACE", label: "Marketplace" },
+              { id: "ALL", label: "All Resources", href: "/vault" },
+              { id: "VAULT", label: "Academic Vault", href: "/vault" },
+              { id: "NOTICES", label: "Official Notices", href: "/board/notic" },
+              { id: "LOSTFOUND", label: "Lost & Found", href: "/board/lost" },
+              { id: "MARKETPLACE", label: "Marketplace", href: "/marketplace" },
             ].map((tab) => (
-              <button
+              <Link
                 key={tab.id}
-                onClick={() => setActiveCategory(tab.id as any)}
+                href={tab.href}
                 className={`px-4 py-2 text-xs font-mono font-medium uppercase tracking-wider rounded-full transition-all shrink-0 cursor-pointer backdrop-blur-md ${
                   activeCategory === tab.id
                     ? "bg-[#c79e4d] text-[#08120c] font-bold shadow-md"
@@ -233,7 +246,7 @@ export default function CampusExplorer({ onOpenLoginModal }: CampusExplorerProps
                 }`}
               >
                 {tab.label}
-              </button>
+              </Link>
             ))}
           </div>
 
@@ -306,9 +319,18 @@ export default function CampusExplorer({ onOpenLoginModal }: CampusExplorerProps
                   </div>
 
                   {/* Card Title */}
-                  <h3 className="text-lg font-serif font-bold text-white tracking-tight mb-2 leading-snug group-hover:text-[#deb86d] transition-colors drop-shadow-sm">
-                    {card.title}
-                  </h3>
+                  {card.category === "VAULT" ? (
+                    <Link
+                      href={`/vault/subject/${card.rawItem.subjectCode.toLowerCase()}`}
+                      className="block text-lg font-serif font-bold text-white tracking-tight mb-2 leading-snug group-hover:text-[#deb86d] transition-colors drop-shadow-sm"
+                    >
+                      {card.title}
+                    </Link>
+                  ) : (
+                    <h3 className="text-lg font-serif font-bold text-white tracking-tight mb-2 leading-snug group-hover:text-[#deb86d] transition-colors drop-shadow-sm">
+                      {card.title}
+                    </h3>
+                  )}
 
                   {/* Rating or Status Tag */}
                   <div className="flex items-center gap-2 mb-3">
@@ -336,12 +358,28 @@ export default function CampusExplorer({ onOpenLoginModal }: CampusExplorerProps
                   <button
                     onClick={() => {
                       if (card.category === "LOSTFOUND") {
+                        if (!profile) {
+                          onOpenLoginModal?.();
+                          return;
+                        }
                         setSelectedClaimItem(card.rawItem);
                       } else if (card.category === "NOTICES") {
+                        if (!profile) {
+                          onOpenLoginModal?.();
+                          return;
+                        }
                         setSelectedNotice(card.rawItem);
                       } else if (card.category === "VAULT") {
+                        if (!profile) {
+                          onOpenLoginModal?.();
+                          return;
+                        }
                         setSelectedVaultItem(card.rawItem);
                       } else if (card.category === "MARKETPLACE") {
+                        if (!profile) {
+                          onOpenLoginModal?.();
+                          return;
+                        }
                         showToast(`Contacting seller (${card.rawItem.sellerMaskedId}) for in-person campus canteen exchange.`);
                       }
                     }}

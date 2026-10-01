@@ -7,7 +7,7 @@ export default function SignaturePortals() {
   const portals = [
     {
       title: "Academic Vault",
-      subtitle: "850+ Solved Papers",
+      subtitle: "0 Solved Papers",
       desc: "MAKAUT past exams, lecture notes & syllabus modules.",
       image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=600&q=80",
       code: "VAULT",

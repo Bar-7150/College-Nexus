@@ -85,7 +85,7 @@ export interface Community {
   rules: string[];
 }
 
-export const INITIAL_COMMUNITIES: Community[] = [
+export const INITIAL_COMMUNITIES: Community[] = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     id: "batch-2025-2029",
     name: "Batch 2025-2029",
@@ -782,4 +782,4 @@ export const INITIAL_COMMUNITIES: Community[] = [
     ],
     rules: ["No plagiarism during live contests", "Explain the intuition when sharing code"],
   },
-];
+] : [];

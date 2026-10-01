@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 import {
   Menu,
   X,
@@ -13,6 +14,10 @@ import {
   Bell,
   ShoppingBag,
   Users,
+  LogOut,
+  User as UserIcon,
+  CheckCircle2,
+  FolderUp,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -20,35 +25,52 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onOpenLoginModal }: NavbarProps) {
+  const { profile, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node)
+      ) {
+        setProfileDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const navLinks = [
     {
       name: "The Vault",
-      href: "/#explorer",
-      badge: "850+ PYQs",
+      href: "/vault",
+      badge: "0 PYQs",
       submenu: [
-        { title: "Computer Science (CSE)", desc: "CS301 - CS802 Past Papers & Notes", code: "CSE" },
-        { title: "Electronics & Comm (ECE)", desc: "Analog, VLSI, DSP Archives", code: "ECE" },
-        { title: "Electrical Engineering (EE)", desc: "Machines, Power Systems, Signals", code: "EE" },
-        { title: "Mechanical Engineering (ME)", desc: "Thermodynamics, Fluid, Drafters", code: "ME" },
-        { title: "Information Tech (IT)", desc: "DBMS, Web Tech, Networks", code: "IT" },
+        { title: "Computer Science (CSE)", desc: "CS301 - CS802 Past Papers & Notes", code: "CSE", url: "/vault/cse" },
+        { title: "Electronics & Comm (ECE)", desc: "Analog, VLSI, DSP Archives", code: "ECE", url: "/vault" },
+        { title: "Electrical Engineering (EE)", desc: "Machines, Power Systems, Signals", code: "EE", url: "/vault" },
+        { title: "Mechanical Engineering (ME)", desc: "Thermodynamics, Fluid, Drafters", code: "ME", url: "/vault" },
+        { title: "Information Tech (IT)", desc: "DBMS, Web Tech, Networks", code: "IT", url: "/vault" },
       ],
     },
     {
       name: "The Board",
-      href: "/#explorer",
+      href: "/board/notic",
       badge: "Circulars",
       submenu: [
-        { title: "Official T&P Circulars", desc: "Campus recruitment & internship drives", icon: Bell },
-        { title: "Lost & Found AI Handover", desc: "Private recovery with zero phone exposure", icon: ShieldCheck },
-        { title: "Dean & Exam Memos", desc: "MAKAUT semester schedules & routines", icon: Sparkles },
+        { title: "Official T&P Circulars", desc: "Campus recruitment & internship drives", icon: Bell, url: "/board/notic" },
+        { title: "Lost & Found AI Handover", desc: "Private recovery with zero phone exposure", icon: ShieldCheck, url: "/board/lost" },
+        { title: "Dean & Exam Memos", desc: "MAKAUT semester schedules & routines", icon: Sparkles, url: "/board/notic" },
       ],
     },
     {
       name: "Marketplace",
-      href: "/#explorer",
+      href: "/marketplace",
       badge: "0% Fee",
       submenu: [
         { title: "Engineering Drafters & Tools", desc: "Mini-drafters, compasses, scales" },
@@ -173,42 +195,159 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
             <Link
               href="/messages"
               className="relative p-2 text-[#d3e2d8] hover:text-[#deb86d] hover:bg-white/10 rounded-full transition-colors cursor-pointer"
-              title="Campus Messages (3 unread)"
+              title="Campus Messages"
             >
               <MessageSquare className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#c79e4d] ring-2 ring-[#0b1510]"></span>
             </Link>
 
-            {/* Student Profile Pill */}
-            <Link
-              href="/profile"
-              className="flex items-center gap-2 pl-1.5 pr-3 py-1 border border-white/15 hover:border-[#c79e4d]/50 bg-white/5 hover:bg-white/10 rounded-full text-xs font-medium text-[#e0ece4] transition-all cursor-pointer group"
-            >
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#deb86d] to-[#9c752c] text-[#0b1510] font-bold text-[9px] flex items-center justify-center shrink-0">
-                AS
-              </div>
-              <span className="text-xs group-hover:text-[#deb86d] transition-colors">Profile</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
-            </Link>
+            {/* Authenticated Profile Pill or Sign In Trigger */}
+            {profile ? (
+              <div className="relative" ref={profileDropdownRef}>
+                <button
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className="flex items-center gap-2 pl-1.5 pr-3 py-1 border border-white/20 hover:border-[#c79e4d]/70 bg-white/10 hover:bg-white/15 rounded-full text-xs font-medium text-[#e0ece4] transition-all cursor-pointer group shadow-sm"
+                  aria-label="Student account menu"
+                >
+                  {profile.avatarUrl ? (
+                    <img
+                      src={profile.avatarUrl}
+                      alt={profile.name}
+                      className="w-5 h-5 rounded-full object-cover shrink-0 ring-1 ring-[#deb86d]/50"
+                    />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#deb86d] to-[#9c752c] text-[#0b1510] font-bold text-[9px] flex items-center justify-center shrink-0">
+                      {profile.avatarText || "ST"}
+                    </div>
+                  )}
+                  <span className="text-xs group-hover:text-[#deb86d] transition-colors max-w-[90px] truncate">
+                    {profile.name.split(" ")[0]}
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                  <ChevronDown className="w-3 h-3 text-[#a3b8ab] group-hover:text-[#deb86d] transition-transform duration-200" />
+                </button>
 
-            {/* Luxury Gold Pill Button (Roll Auth) */}
-            <button
-              onClick={onOpenLoginModal}
-              className="flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-[#dfc285] via-[#c79e4d] to-[#b3853b] hover:brightness-110 text-[#08120c] text-xs font-bold tracking-wider uppercase rounded-full shadow-lg hover:shadow-xl transition-all cursor-pointer shrink-0"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-[#08120c]" />
-              <span>Roll Auth</span>
-            </button>
+                {/* Profile Floating Dropdown Menu */}
+                {profileDropdownOpen && (
+                  <div className="absolute right-0 top-full pt-2 w-72 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                    <div className="bg-[#0b1611]/95 border border-[#233d2e] shadow-2xl rounded-2xl p-3.5 backdrop-blur-2xl text-[#d4e2d8]">
+                      
+                      {/* Identity Card Header */}
+                      <div className="p-3 bg-[#13231a] rounded-xl border border-[#264232] mb-3">
+                        <div className="flex items-center gap-3">
+                          {profile.avatarUrl ? (
+                            <img
+                              src={profile.avatarUrl}
+                              alt={profile.name}
+                              className="w-10 h-10 rounded-full object-cover ring-2 ring-[#deb86d]/50 shrink-0"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#dfc285] to-[#9c752c] text-[#08120c] font-bold text-sm flex items-center justify-center shrink-0">
+                              {profile.avatarText}
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-bold text-white truncate flex items-center gap-1.5">
+                              <span>{profile.name}</span>
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#deb86d] shrink-0" />
+                            </div>
+                            <div className="text-[10px] font-mono text-[#a4b8ab] truncate">
+                              {profile.rollNumber}
+                            </div>
+                            <div className="flex items-center gap-1.5 mt-1">
+                              <span className="text-[9px] px-1.5 py-0.2 bg-[#1b3425] text-[#deb86d] rounded border border-[#284834] font-mono uppercase font-semibold">
+                                {profile.department}
+                              </span>
+                              <span className="text-[9px] text-[#788e81] font-mono">
+                                {profile.batchYear}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Dropdown Navigation Actions */}
+                      <div className="space-y-1 text-xs">
+                        <Link
+                          href="/profile"
+                          onClick={() => setProfileDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[#dbe5df] hover:text-[#deb86d] hover:bg-[#14261c] transition-colors"
+                        >
+                          <UserIcon className="w-4 h-4 text-[#deb86d]" />
+                          <span>Intranet Student Profile</span>
+                        </Link>
+
+                        <Link
+                          href="/messages"
+                          onClick={() => setProfileDropdownOpen(false)}
+                          className="flex items-center justify-between px-3 py-2 rounded-xl text-[#dbe5df] hover:text-[#deb86d] hover:bg-[#14261c] transition-colors"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <MessageSquare className="w-4 h-4 text-[#869f90]" />
+                            <span>Campus Peer Messages</span>
+                          </div>
+                          <span className="w-2 h-2 rounded-full bg-[#deb86d]"></span>
+                        </Link>
+
+                        <Link
+                          href="/upload-test"
+                          onClick={() => setProfileDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[#dbe5df] hover:text-[#deb86d] hover:bg-[#14261c] transition-colors"
+                        >
+                          <FolderUp className="w-4 h-4 text-[#869f90]" />
+                          <span>Intranet Asset Vault & Upload</span>
+                        </Link>
+
+                        <div className="border-t border-[#1b3224] my-1 pt-1"></div>
+
+                        {/* Sign Out Button */}
+                        <button
+                          onClick={async () => {
+                            setProfileDropdownOpen(false);
+                            await logout();
+                          }}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-red-300 hover:text-red-200 hover:bg-red-950/40 transition-colors text-left"
+                        >
+                          <LogOut className="w-4 h-4 text-red-400" />
+                          <span className="font-medium">Sign Out from Session</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Luxury Gold Pill Button */
+              <button
+                onClick={onOpenLoginModal}
+                className="flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-[#dfc285] via-[#c79e4d] to-[#b3853b] hover:brightness-110 text-[#08120c] text-xs font-bold tracking-wider uppercase rounded-full shadow-lg hover:shadow-xl transition-all cursor-pointer shrink-0"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-[#08120c]" />
+                <span>Sign In</span>
+              </button>
+            )}
           </div>
 
-          {/* Mobile Hamburger Controls */}
+          {/* Mobile Hamburger & Quick Auth Controls */}
           <div className="flex lg:hidden items-center gap-2">
-            <button
-              onClick={onOpenLoginModal}
-              className="px-3 py-1.5 bg-[#c79e4d] text-[#08120c] text-[10px] font-bold uppercase rounded-full"
-            >
-              Auth
-            </button>
+            {profile ? (
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-white/10 rounded-full border border-white/20 text-[#deb86d] text-[11px] font-medium"
+              >
+                <div className="w-4 h-4 rounded-full bg-[#deb86d] text-[#08120c] text-[8px] font-bold flex items-center justify-center">
+                  {profile.avatarText}
+                </div>
+                <span className="max-w-[60px] truncate">{profile.name.split(" ")[0]}</span>
+              </button>
+            ) : (
+              <button
+                onClick={onOpenLoginModal}
+                className="px-3 py-1.5 bg-[#c79e4d] text-[#08120c] text-[10px] font-bold uppercase rounded-full"
+              >
+                Sign In
+              </button>
+            )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-1.5 text-white hover:text-[#deb86d] transition-colors focus:outline-none"
@@ -222,6 +361,33 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
         {/* Mobile Drawer Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden mt-3 pt-3 border-t border-white/15 px-2 py-4 space-y-3">
+            {/* Student Session Card in Mobile if Logged In */}
+            {profile && (
+              <div className="p-3 bg-[#0d1c14] border border-[#223d2e] rounded-xl flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-[#c79e4d] text-[#08120c] font-bold text-xs flex items-center justify-center shrink-0">
+                    {profile.avatarText}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-white">{profile.name}</div>
+                    <div className="text-[10px] font-mono text-[#a4b8ab]">
+                      {profile.rollNumber} • {profile.department}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={async () => {
+                    setMobileMenuOpen(false);
+                    await logout();
+                  }}
+                  className="p-1.5 text-red-400 hover:text-red-300"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
             <div className="space-y-1">
               {navLinks.map((link) => (
                 <div key={link.name} className="border-b border-white/10 pb-1.5">
@@ -248,19 +414,30 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
                 className="w-full py-2 bg-white/10 hover:bg-white/15 text-[#deb86d] text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2 rounded-full border border-white/10"
               >
                 <MessageSquare className="w-3.5 h-3.5 text-[#c79e4d]" />
-                <span>Messages (3 New)</span>
+                <span>Messages</span>
               </Link>
 
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  if (onOpenLoginModal) onOpenLoginModal();
-                }}
-                className="w-full py-2.5 bg-gradient-to-r from-[#dfc285] via-[#c79e4d] to-[#b3853b] text-[#08120c] text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2 rounded-full shadow-md"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Authenticate Roll Number</span>
-              </button>
+              {profile ? (
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2 bg-white/10 hover:bg-white/15 text-[#e0ece4] text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2 rounded-full border border-white/10"
+                >
+                  <UserIcon className="w-3.5 h-3.5 text-[#deb86d]" />
+                  <span>View Intranet Profile</span>
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (onOpenLoginModal) onOpenLoginModal();
+                  }}
+                  className="w-full py-2.5 bg-gradient-to-r from-[#dfc285] via-[#c79e4d] to-[#b3853b] text-[#08120c] text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2 rounded-full shadow-md"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Authenticate Roll Number</span>
+                </button>
+              )}
             </div>
           </div>
         )}

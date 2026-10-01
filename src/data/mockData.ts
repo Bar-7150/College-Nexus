@@ -73,15 +73,15 @@ export interface FAQItem {
 }
 
 export const KGEC_DEPARTMENTS = [
-  { code: "ALL", name: "All Departments", kanji: "全", count: "850+ Resources" },
-  { code: "CSE", name: "Computer Science & Engg", kanji: "計", count: "230+ Resources" },
-  { code: "ECE", name: "Electronics & Comm. Engg", kanji: "電", count: "195+ Resources" },
-  { code: "EE", name: "Electrical Engineering", kanji: "力", count: "160+ Resources" },
-  { code: "ME", name: "Mechanical Engineering", kanji: "機", count: "145+ Resources" },
-  { code: "IT", name: "Information Technology", kanji: "通", count: "120+ Resources" },
+  { code: "ALL", name: "All Departments", kanji: "全", count: "0 Resources" },
+  { code: "CSE", name: "Computer Science & Engg", kanji: "計", count: "0 Resources" },
+  { code: "ECE", name: "Electronics & Comm. Engg", kanji: "電", count: "0 Resources" },
+  { code: "EE", name: "Electrical Engineering", kanji: "力", count: "0 Resources" },
+  { code: "ME", name: "Mechanical Engineering", kanji: "機", count: "0 Resources" },
+  { code: "IT", name: "Information Technology", kanji: "通", count: "0 Resources" },
 ];
 
-export const MOCK_VAULT_ITEMS: VaultItem[] = [
+export const MOCK_VAULT_ITEMS: VaultItem[] = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     id: "v-1",
     title: "Computer Networks CS501 — 2023 MAKAUT End-Sem Solved Solutions",
@@ -184,9 +184,9 @@ export const MOCK_VAULT_ITEMS: VaultItem[] = [
     pages: 34,
     date: "Aug 29, 2026",
   },
-];
+] : [];
 
-export const MOCK_NOTICES: NoticeItem[] = [
+export const MOCK_NOTICES: NoticeItem[] = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     id: "n-1",
     title: "T&P Cell: Google & Microsoft Summer SDE Internship Pre-Assessment Registration",
@@ -235,9 +235,9 @@ export const MOCK_NOTICES: NoticeItem[] = [
       "Inter-department robotics tournament with ₹50,000 cash pool. Hardware component lab sponsorship provided.",
     pinned: false,
   },
-];
+] : [];
 
-export const MOCK_LOST_FOUND: LostFoundItem[] = [
+export const MOCK_LOST_FOUND: LostFoundItem[] = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     id: "lf-1",
     itemName: "Casio fx-991EX ClassWiz Calculator",
@@ -282,9 +282,9 @@ export const MOCK_LOST_FOUND: LostFoundItem[] = [
     imageType: "keys",
     hiddenClue: "Attached to black leather carabiner and brass #314 fob",
   },
-];
+] : [];
 
-export const MOCK_MARKETPLACE: MarketplaceItem[] = [
+export const MOCK_MARKETPLACE: MarketplaceItem[] = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     id: "m-1",
     title: "Omega Engineering Drafter Set + Hard Travel Case",
@@ -337,9 +337,9 @@ export const MOCK_MARKETPLACE: MarketplaceItem[] = [
     sellerMaskedId: "Roll 21/**/003",
     dateListed: "Sep 18, 2026",
   },
-];
+] : [];
 
-export const QUEST_LEVELS: QuestLevel[] = [
+export const QUEST_LEVELS: QuestLevel[] = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     level: "LEVEL I",
     kanji: "浪人",
@@ -404,9 +404,9 @@ export const QUEST_LEVELS: QuestLevel[] = [
       "Journey to Mastery Graduation",
     ],
   },
-];
+] : [];
 
-export const MOCK_TIMELINE = [
+export const MOCK_TIMELINE = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     week: "WEEK I",
     dates: "SEP 01 – SEP 07",
@@ -439,9 +439,9 @@ export const MOCK_TIMELINE = [
     focus: "Demo Day & Production Launch",
     tasks: ["Live KGEC Student Onboarding", "50+ Verified Vault Resources", "Final Showcase & Evaluation"],
   },
-];
+] : [];
 
-export const MOCK_MENTORS = [
+export const MOCK_MENTORS = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     name: "Sayan Chatterjee",
     role: "Software Engineer & Sensei",
@@ -482,9 +482,9 @@ export const MOCK_MENTORS = [
     github: "https://github.com/MdKaifSardar/",
     linkedin: "https://www.linkedin.com/in/md-kaif-sardar-12aab4290/",
   },
-];
+] : [];
 
-export const FAQS: FAQItem[] = [
+export const FAQS: FAQItem[] = process.env.NEXT_PUBLIC_USE_DEMO_DATA === "true" ? [
   {
     id: "faq-1",
     category: "Auth & Privacy",
@@ -527,4 +527,4 @@ export const FAQS: FAQItem[] = [
     answer:
       "Any verified student can contribute study notes, past papers, or solutions. Class Representatives (CRs) and designated academic curators review contributions, awarding an official 'CR-Verified' seal to guaranteed accurate exam materials.",
   },
-];
+] : [];

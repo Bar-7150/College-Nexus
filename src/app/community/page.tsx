@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, Suspense } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import FixedCampusBackground from "@/components/FixedCampusBackground";
 import Navbar from "@/components/Navbar";
@@ -9,7 +9,10 @@ import LoginModal from "@/components/LoginModal";
 import CommunityCard from "@/components/community/CommunityCard";
 import CommunityRoomModal from "@/components/community/CommunityRoomModal";
 import CreateCommunityModal from "@/components/community/CreateCommunityModal";
+import AuthGuard from "@/components/auth/AuthGuard";
+import { createClient } from "@/lib/supabase/client";
 import RedUnderline from "@/components/RedUnderline";
+import InstitutionMarks from "@/components/InstitutionMarks";
 import {
   INITIAL_COMMUNITIES,
   Community,
@@ -59,6 +62,26 @@ function CommunityPageContent() {
   );
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [enrolledCount, setEnrolledCount] = useState(0);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadEnrollmentCount = async () => {
+      const supabase = createClient();
+      const { count } = await supabase
+        .from("profiles")
+        .select("id", { count: "exact", head: true });
+      if (mounted) setEnrolledCount(count ?? 0);
+    };
+
+    loadEnrollmentCount().catch(() => {
+      if (mounted) setEnrolledCount(0);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Toast feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -115,8 +138,8 @@ function CommunityPageContent() {
       content: postData.content || "",
       tag: postData.tag || "General",
       channel: postData.channel || "#general-chat",
-      likes: 1,
-      userLiked: true,
+      likes: 0,
+      userLiked: false,
       replies: [],
     };
 
@@ -329,7 +352,8 @@ function CommunityPageContent() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#070e0a] text-[#f5f9f6] relative selection:bg-[#c79e4d] selection:text-[#0b1510] flex flex-col justify-between overflow-x-hidden">
+    <AuthGuard resourceName="KGEC Communities & Guilds">
+      <main className="min-h-screen bg-[#070e0a] text-[#f5f9f6] relative selection:bg-[#c79e4d] selection:text-[#0b1510] flex flex-col justify-between overflow-x-hidden">
       {/* Global Fixed Campus Background with cross-fades matching home page */}
       <FixedCampusBackground />
 
@@ -341,6 +365,7 @@ function CommunityPageContent() {
         
         {/* HERO BANNER SECTION */}
         <section id="hero" className="relative py-10 md:py-16">
+          <InstitutionMarks />
           {/* Ambient Lighting Glow */}
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-[#c79e4d]/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -378,7 +403,7 @@ function CommunityPageContent() {
                 </div>
                 <div className="sm:pl-4">
                   <span className="text-xl sm:text-2xl font-bold font-serif text-[#deb86d] block leading-tight">
-                    7,400+
+                    {enrolledCount}
                   </span>
                   <span className="text-[10px] font-mono text-[#9cb0a2] uppercase tracking-wider">
                     Enrolled KGECians
@@ -692,7 +717,8 @@ function CommunityPageContent() {
 
       {/* Footer */}
       <Footer />
-    </main>
+      </main>
+    </AuthGuard>
   );
 }
 

@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import AuthGuard from "@/components/auth/AuthGuard";
 import Navbar from "@/components/Navbar";
 import FixedCampusBackground from "@/components/FixedCampusBackground";
 import Footer from "@/components/Footer";
@@ -16,6 +18,7 @@ import JobStatusModal from "@/components/profile/JobStatusModal";
 import MessageModal from "@/components/profile/MessageModal";
 import ConnectNoteModal from "@/components/profile/ConnectNoteModal";
 import EditProfileModal from "@/components/profile/EditProfileModal";
+import VerificationModal from "@/components/profile/VerificationModal";
 import {
   INITIAL_PROFILES,
   INITIAL_CONNECTION_REQUESTS,
@@ -47,8 +50,37 @@ import {
   Search,
 } from "lucide-react";
 
+function createEmptyProfile(): StudentProfile {
+  return {
+    id: "current-user",
+    name: "Student",
+    rollNumber: "",
+    department: "CSE",
+    batchYear: "",
+    semester: 0,
+    headline: "Add a headline to introduce yourself.",
+    pronouns: "",
+    location: "",
+    avatarText: "ST",
+    avatarBg: "from-[#38513f] to-[#172b20]",
+    bannerGradient: "from-[#0b1510] via-[#183323] to-[#3b2d12]",
+    jobStatus: { status: "Researching", targetRoles: [], preferredLocations: [], jobTypes: [], startDate: "", isOpenToWork: false },
+    about: "",
+    connectionCount: 0,
+    followerCount: 0,
+    mutualConnections: [],
+    connectionStatus: "self",
+    education: [],
+    experience: [],
+    achievements: [],
+    skills: [],
+    certifications: [],
+    stats: { profileViews: 0, postImpressions: 0, searchAppearances: 0 },
+  };
+}
+
 export default function ProfilePage() {
-  const [profiles, setProfiles] = useState<StudentProfile[]>(INITIAL_PROFILES);
+  const [profiles, setProfiles] = useState<StudentProfile[]>(() => INITIAL_PROFILES.length ? INITIAL_PROFILES : [createEmptyProfile()]);
   const [currentUserId, setCurrentUserId] = useState<string>("arjun-sen");
   const [viewedProfileId, setViewedProfileId] = useState<string>("arjun-sen");
   const [activeTab, setActiveTab] = useState<"profile" | "network">("profile");
@@ -65,6 +97,8 @@ export default function ProfilePage() {
   const [connectNoteModalOpen, setConnectNoteModalOpen] = useState(false);
   const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [verificationModalOpen, setVerificationModalOpen] = useState(false);
+  const [verifiedProfileIds, setVerifiedProfileIds] = useState<string[]>([]);
   const [targetPeer, setTargetPeer] = useState<StudentProfile | null>(null);
 
   // Toast notifications
@@ -75,10 +109,27 @@ export default function ProfilePage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const currentLoggedInUser =
-    profiles.find((p) => p.id === currentUserId) || profiles[0];
-  const activeProfile =
-    profiles.find((p) => p.id === viewedProfileId) || profiles[0];
+  const { profile: authUser } = useAuth();
+
+  const rawCurrentUser =
+    profiles.find((p) => p.id === currentUserId) || profiles[0] || createEmptyProfile();
+  const currentLoggedInUser: StudentProfile = authUser
+    ? {
+        ...rawCurrentUser,
+        name: authUser.name,
+        rollNumber: authUser.rollNumber,
+        department: (["CSE", "ECE", "EE", "ME", "IT"].includes(authUser.department)
+          ? authUser.department
+          : rawCurrentUser.department) as any,
+        batchYear: authUser.batchYear || rawCurrentUser.batchYear,
+        avatarText: authUser.avatarText || rawCurrentUser.avatarText,
+      }
+    : rawCurrentUser;
+
+  const rawActiveProfile =
+    profiles.find((p) => p.id === viewedProfileId) || rawCurrentUser;
+  const activeProfile: StudentProfile =
+    viewedProfileId === currentUserId ? currentLoggedInUser : rawActiveProfile;
   const isViewingSelf = viewedProfileId === currentUserId;
 
   // Handle Connect Button Click
@@ -165,8 +216,8 @@ export default function ProfilePage() {
     const post: AchievementPost = {
       ...newPost,
       id: `post-${Date.now()}`,
-      reactions: { like: 1, celebrate: 1, insightful: 0 },
-      userReaction: "celebrate",
+      reactions: { like: 0, celebrate: 0, insightful: 0 },
+      userReaction: null,
       comments: [],
       shares: 0,
     };
@@ -177,10 +228,6 @@ export default function ProfilePage() {
           ? {
               ...p,
               achievements: [post, ...p.achievements],
-              stats: {
-                ...p.stats,
-                postImpressions: p.stats.postImpressions + 85,
-              },
             }
           : p
       )
@@ -330,15 +377,19 @@ export default function ProfilePage() {
   // Update Profile details
   const handleSaveProfile = (updated: Partial<StudentProfile>) => {
     setProfiles((prev) =>
-      prev.map((p) =>
-        p.id === activeProfile.id ? { ...p, ...updated } : p
-      )
+      prev.some((p) => p.id === activeProfile.id)
+        ? prev.map((p) => p.id === activeProfile.id ? { ...p, ...updated } : p)
+        : [...prev, { ...activeProfile, ...updated }]
     );
     showToast("Profile details updated successfully!");
   };
 
   return (
-    <main className="min-h-screen bg-[#070e0a] text-[#f5f9f6] relative selection:bg-[#c79e4d] selection:text-[#0b1510] flex flex-col justify-between overflow-x-hidden">
+    <AuthGuard
+      resourceName="KGEC Student Profiles & Network Hub"
+      resourceDescription="Access to student intranet dossiers, Makaut verified roll credentials, peer endorsements, and recruitment feeds requires an authenticated KGEC student account."
+    >
+      <main className="min-h-screen bg-[#070e0a] text-[#f5f9f6] relative selection:bg-[#c79e4d] selection:text-[#0b1510] flex flex-col justify-between overflow-x-hidden">
       {/* Global Fixed Campus Background with cross-fades matching home page */}
       <FixedCampusBackground />
 
@@ -478,6 +529,8 @@ export default function ProfilePage() {
                   }
                   showToast(`Profile link for ${activeProfile.name} copied to clipboard!`);
                 }}
+                isInstitutionVerified={verifiedProfileIds.includes(activeProfile.id)}
+                onOpenVerificationClick={() => setVerificationModalOpen(true)}
               />
 
               {/* About Section */}
@@ -747,6 +800,18 @@ export default function ProfilePage() {
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
       />
+
+      <VerificationModal
+        isOpen={verificationModalOpen}
+        onClose={() => setVerificationModalOpen(false)}
+        onVerified={() => {
+          setVerifiedProfileIds((current) =>
+            current.includes(currentUserId) ? current : [...current, currentUserId]
+          );
+          showToast("Verification submitted for campus review.");
+        }}
+      />
     </main>
+  </AuthGuard>
   );
 }
