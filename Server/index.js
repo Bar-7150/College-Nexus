@@ -12,11 +12,23 @@ const { testSupabaseConnection } = require("./config/supabase");
 const app = express();
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
+const ALLOWED_CLIENT_ORIGINS = [
+  ...CLIENT_URL.split(","),
+  ...(process.env.CLIENT_URLS || "").split(","),
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "https://nexusmakautkgec.vercel.app",
+].map((origin) => origin.trim()).filter(Boolean);
 
 // Middleware: CORS for frontend intranet access
 app.use(
   cors({
-    origin: [CLIENT_URL, "http://localhost:3000", "http://127.0.0.1:3000"],
+    origin(origin, callback) {
+      if (!origin || ALLOWED_CLIENT_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS origin not allowed: ${origin}`));
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
