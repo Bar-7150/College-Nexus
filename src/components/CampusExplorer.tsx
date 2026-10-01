@@ -42,6 +42,13 @@ interface CampusExplorerProps {
   initialCategory?: "ALL" | "VAULT" | "NOTICES" | "LOSTFOUND" | "MARKETPLACE" | "CLUBS";
   initialDeptFilter?: string;
   beforeFilters?: React.ReactNode;
+  additionalSubjects?: Array<{
+    department: string;
+    name: string;
+    code: string;
+    semester: string;
+    description: string;
+  }>;
 }
 
 export default function CampusExplorer({
@@ -49,6 +56,7 @@ export default function CampusExplorer({
   initialCategory = "ALL",
   initialDeptFilter = "ALL",
   beforeFilters,
+  additionalSubjects = [],
 }: CampusExplorerProps) {
     const { profile } = useAuth();
   const [activeCategory, setActiveCategory] = useState<
@@ -191,6 +199,15 @@ export default function CampusExplorer({
     return aggregatedCards.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   }, [aggregatedCards, currentPage, ITEMS_PER_PAGE]);
 
+  const visibleAdditionalSubjects = useMemo(() => {
+    const query = searchQuery.toLowerCase();
+    return additionalSubjects.filter((subject) => {
+      const matchesDepartment = deptFilter === "ALL" || subject.department === deptFilter;
+      const matchesSearch = !query || `${subject.name} ${subject.code} ${subject.description}`.toLowerCase().includes(query);
+      return matchesDepartment && matchesSearch;
+    });
+  }, [additionalSubjects, deptFilter, searchQuery]);
+
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     const explorerElem = document.getElementById("explorer");
@@ -302,6 +319,22 @@ export default function CampusExplorer({
 
         {/* 3-Column Luxury Card Grid (Maximum 2 rows = 6 items) with 90% Transparent Ultra-Glass and Staggered Animations */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {visibleAdditionalSubjects.map((subject) => (
+            <ScrollReveal key={`subject-${subject.code}`} className="h-full">
+              <Link
+                href={`/vault/subject/${subject.code.toLowerCase()}`}
+                className="group flex h-full flex-col justify-between rounded-2xl border border-[#c79e4d]/45 bg-[#070e0a]/20 p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-[#deb86d] hover:bg-[#070e0a]/35"
+              >
+                <div>
+                  <div className="mb-4 flex items-center justify-between gap-2"><span className="rounded-full border border-[#c79e4d]/40 bg-[#c79e4d]/10 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-wider text-[#deb86d]">NEW SUBJECT</span><span className="text-[10px] font-mono text-[#cbe0d3]">{subject.department} · Sem {subject.semester}</span></div>
+                  <h3 className="font-serif text-xl font-bold leading-snug text-white transition-colors group-hover:text-[#deb86d]">{subject.name}</h3>
+                  <p className="mt-2 text-xs font-mono text-[#deb86d]">{subject.code}</p>
+                  <p className="mt-4 text-xs leading-relaxed text-[#dbe7de]">{subject.description || "Student-created subject workspace ready for notes, PYQs, and syllabus resources."}</p>
+                </div>
+                <div className="mt-6 flex items-center justify-between border-t border-white/15 pt-4 text-[11px] font-mono text-[#9bb0a2]"><span>KGEC TAXONOMY</span><span className="text-[#deb86d]">OPEN SUBJECT →</span></div>
+              </Link>
+            </ScrollReveal>
+          ))}
           {displayedCards.map((card, idx) => (
             <ScrollReveal key={card.id} delay={(idx % 3) * 120} className="h-full">
               <div

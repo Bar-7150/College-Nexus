@@ -104,6 +104,8 @@ export interface StudentProfile {
   pronouns: string;
   location: string;
   avatarText: string;
+  avatarUrl?: string;
+  bannerUrl?: string;
   avatarBg: string;
   bannerGradient: string;
   jobStatus: JobStatusInfo;

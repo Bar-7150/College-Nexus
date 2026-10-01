@@ -60,6 +60,7 @@ export default function ResourceDirectory({ kind }: { kind: DirectoryKind }) {
           initialCategory={initialCategory}
           initialDeptFilter={initialDeptFilter}
           onOpenLoginModal={() => setLoginModalOpen(true)}
+          additionalSubjects={createdSubjects}
           beforeFilters={canAddSubject ? (
           <div className="mx-auto mb-8 flex max-w-7xl flex-col gap-4 px-4 sm:px-6 lg:px-12">
             <div className="flex items-center justify-between gap-4 rounded-2xl border border-[#c79e4d]/30 bg-[#070e0a]/60 px-4 py-3 backdrop-blur-md">

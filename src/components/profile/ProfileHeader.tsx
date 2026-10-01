@@ -93,7 +93,8 @@ export default function ProfileHeader({
 
       {/* Cover / Banner Image */}
       <div
-        className={`h-48 sm:h-60 w-full bg-gradient-to-r ${profile.bannerGradient} relative p-4 sm:p-5 flex items-start justify-between shadow-inner`}
+        className={`h-48 sm:h-60 w-full bg-gradient-to-r ${profile.bannerGradient} relative bg-cover bg-center p-4 sm:p-5 flex items-start justify-between shadow-inner`}
+        style={profile.bannerUrl ? { backgroundImage: `url(${profile.bannerUrl})` } : undefined}
       >
         <div className="absolute inset-0 bg-[#070e0a]/20 backdrop-blur-[1px] pointer-events-none"></div>
 
@@ -130,7 +131,7 @@ export default function ProfileHeader({
             <div
               className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-br ${profile.avatarBg} text-white font-bold text-3xl sm:text-4xl flex items-center justify-center shadow-2xl border-4 border-[#070e0a]/80 ring-2 ring-[#c79e4d]/70 relative z-10 transition-transform hover:scale-105 select-none`}
             >
-              {profile.avatarText}
+              {profile.avatarUrl ? <img src={profile.avatarUrl} alt={`${profile.name} profile`} className="h-full w-full rounded-full object-cover" /> : profile.avatarText}
 
               {/* Online pulse dot */}
               <span className="absolute bottom-2 right-2 w-4 h-4 bg-emerald-400 border-2 border-[#070e0a] rounded-full"></span>

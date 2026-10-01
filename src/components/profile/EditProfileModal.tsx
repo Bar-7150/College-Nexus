@@ -24,6 +24,15 @@ export default function EditProfileModal({
   const [about, setAbout] = useState(profile.about);
   const [department, setDepartment] = useState(profile.department);
   const [batchYear, setBatchYear] = useState(profile.batchYear);
+  const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl || "");
+  const [bannerUrl, setBannerUrl] = useState(profile.bannerUrl || "");
+
+  const readImage = (file: File | undefined, setter: (value: string) => void) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => setter(String(reader.result || ""));
+    reader.readAsDataURL(file);
+  };
 
   if (!isOpen) return null;
 
@@ -37,6 +46,8 @@ export default function EditProfileModal({
       about,
       department,
       batchYear,
+      avatarUrl,
+      bannerUrl,
     });
     onClose();
   };
@@ -160,6 +171,11 @@ export default function EditProfileModal({
               onChange={(e) => setAbout(e.target.value)}
               className="w-full px-3.5 py-2 text-xs bg-[#0b1510] border border-white/15 focus:border-[#c79e4d] text-white placeholder-white/40 rounded-xl focus:outline-none leading-relaxed resize-none font-medium"
             />
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 border-t border-white/10 pt-4 sm:grid-cols-2">
+            <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d]">Profile image<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => readImage(event.target.files?.[0], setAvatarUrl)} className="mt-1.5 block w-full text-[11px] text-[#a9c0ae] file:mr-2 file:rounded-lg file:border-0 file:bg-[#c79e4d] file:px-3 file:py-2 file:text-xs file:font-bold file:text-[#08120c]" /></label>
+            <label className="block text-xs font-mono uppercase tracking-wider text-[#deb86d]">Profile banner<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => readImage(event.target.files?.[0], setBannerUrl)} className="mt-1.5 block w-full text-[11px] text-[#a9c0ae] file:mr-2 file:rounded-lg file:border-0 file:bg-[#c79e4d] file:px-3 file:py-2 file:text-xs file:font-bold file:text-[#08120c]" /></label>
           </div>
 
           <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2.5">

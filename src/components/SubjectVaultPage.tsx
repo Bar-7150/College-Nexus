@@ -39,7 +39,7 @@ export default function SubjectVaultPage({ code }: { code: string }) {
     MOCK_VAULT_ITEMS.filter((item) => item.subjectCode.toLowerCase() === code.toLowerCase())
   );
   const [uploadOpen, setUploadOpen] = useState(false);
-  const [uploadKind, setUploadKind] = useState<"Notes" | "PYQ">("Notes");
+  const [uploadKind, setUploadKind] = useState<"Syllabus" | "Notes" | "PYQ">("Notes");
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadFileName, setUploadFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -178,7 +178,7 @@ export default function SubjectVaultPage({ code }: { code: string }) {
         <Link href="/vault" className="mb-7 inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#a4b8ab] hover:text-[#deb86d]"><ArrowLeft className="h-3.5 w-3.5" /> Academic Vault</Link>
         <section className="mb-10 border-b border-[#294231] pb-8">
           <div className="mb-3 flex flex-wrap items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-[#deb86d]"><BookOpen className="h-4 w-4" /> {department} / SEMESTER {semester} / {subjectCode}</div>
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end"><div><h1 className="font-serif text-4xl text-white sm:text-6xl">{subjectName}</h1><p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#b7cbbd]">A subject workspace for syllabus, revision notes, previous-year papers, and contributor-reviewed solutions.</p></div><button onClick={() => { if (requireLogin()) setUploadOpen(true); }} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#c79e4d] px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#08120c] hover:bg-[#deb86d]"><FilePlus2 className="h-4 w-4" /> Add notes / PYQ</button></div>
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end"><div><h1 className="font-serif text-4xl text-white sm:text-6xl">{subjectName}</h1><p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#b7cbbd]">A subject workspace for syllabus, revision notes, previous-year papers, and contributor-reviewed solutions.</p></div><div className="flex flex-wrap gap-2"><button onClick={() => { if (requireLogin()) { setUploadKind("Syllabus"); setUploadOpen(true); } }} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[#c79e4d]/60 bg-[#070e0a]/60 px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#deb86d] hover:bg-[#c79e4d]/15"><FilePlus2 className="h-4 w-4" /> Add syllabus</button><button onClick={() => { if (requireLogin()) setUploadOpen(true); }} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#c79e4d] px-4 py-3 text-xs font-bold uppercase tracking-wider text-[#08120c] hover:bg-[#deb86d]"><FilePlus2 className="h-4 w-4" /> Add notes / PYQ</button></div></div>
         </section>
 
         <div className="space-y-8">
