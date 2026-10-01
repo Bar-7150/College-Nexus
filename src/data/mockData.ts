@@ -14,6 +14,8 @@ export interface VaultItem {
   downloads: number;
   pages: number;
   date: string;
+  fileUrl?: string;
+  status?: "PENDING" | "APPROVED" | "REJECTED";
 }
 
 export interface NoticeItem {

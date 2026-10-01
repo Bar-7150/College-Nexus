@@ -12,9 +12,11 @@ const ALLOWED_RESOURCE_TYPES = new Set(["NOTES", "PYQ", "SYLLABUS"]);
 router.get("/resources", requireAuth, async (req, res, next) => {
   try {
     const subjectCode = String(req.query.subject_code || "").trim().toUpperCase();
+    const resourceId = String(req.query.id || "").trim();
     const supabase = getSupabaseAdmin();
     let query = supabase.from("vault_resources").select("*").order("created_at", { ascending: false });
     if (subjectCode) query = query.eq("subject_code", subjectCode);
+    if (resourceId) query = query.eq("id", resourceId);
     const { data, error } = await query;
     if (error) return res.status(500).json({ success: false, error: { code: "DATABASE_READ_FAILED", message: error.message } });
     return res.json({ success: true, data: data || [] });
