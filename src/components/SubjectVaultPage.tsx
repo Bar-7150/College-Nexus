@@ -228,17 +228,13 @@ function ResourceRow({ resource, canDelete, reported, onAccess, onReport, onDele
 }
 
 function PdfViewer({ resource, onClose }: { resource: VaultItem; onClose: () => void }) {
-  const [useGoogleViewer, setUseGoogleViewer] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Convert Cloudinary image/upload → raw/upload so PDFs are served correctly
+  // Always use Google Docs Viewer — Cloudinary raw/upload triggers downloads in direct mode
   const rawPdfUrl = resource.fileUrl
     ? resource.fileUrl.replace("/image/upload/", "/raw/upload/")
     : "";
-
-  const iframeSrc = useGoogleViewer
-    ? `https://docs.google.com/viewer?url=${encodeURIComponent(rawPdfUrl)}&embedded=true`
-    : `${rawPdfUrl}#toolbar=0&navpanes=0&scrollbar=1`;
+  const iframeSrc = `https://docs.google.com/viewer?url=${encodeURIComponent(rawPdfUrl)}&embedded=true`;
 
   useEffect(() => {
     const block = (event: MouseEvent) => event.preventDefault();
@@ -259,17 +255,9 @@ function PdfViewer({ resource, onClose }: { resource: VaultItem; onClose: () => 
           <h2 className="text-sm font-semibold">{resource.title}</h2>
           <p className="text-[10px] text-[#8fa597]">{resource.subjectCode} · {resource.type}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => { setUseGoogleViewer((v) => !v); setLoading(true); }}
-            className="rounded-lg border border-[#38513f] px-3 py-2 text-[11px] text-[#b7cbbd] hover:text-white"
-          >
-            {useGoogleViewer ? "Direct viewer" : "Google viewer"}
-          </button>
-          <button onClick={onClose} className="rounded-lg border border-[#38513f] px-3 py-2 text-xs text-[#b7cbbd] hover:text-white">
-            Close
-          </button>
-        </div>
+        <button onClick={onClose} className="rounded-lg border border-[#38513f] px-3 py-2 text-xs text-[#b7cbbd] hover:text-white">
+          Close
+        </button>
       </div>
 
       {/* Viewer */}
@@ -286,7 +274,6 @@ function PdfViewer({ resource, onClose }: { resource: VaultItem; onClose: () => 
           src={iframeSrc}
           className="h-full w-full border-0"
           onLoad={() => setLoading(false)}
-          onError={() => { setUseGoogleViewer(true); setLoading(true); }}
           onContextMenu={(e) => e.preventDefault()}
         />
       </div>
