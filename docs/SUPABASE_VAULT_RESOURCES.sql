@@ -12,6 +12,7 @@ create table if not exists public.vault_resources (
   file_url text not null,
   cloudinary_public_id text not null,
   file_size_bytes bigint not null default 0,
+  file_hash text not null unique,
   is_cr_verified boolean not null default false,
   status text not null default 'PENDING' check (status in ('PENDING', 'APPROVED', 'REJECTED')),
   created_at timestamptz not null default now()

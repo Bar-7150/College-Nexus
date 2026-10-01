@@ -5,6 +5,7 @@ require("dotenv").config();
 const uploadRoutes = require("./routes/upload");
 const healthRoutes = require("./routes/health");
 const authRoutes = require("./routes/auth");
+const vaultRoutes = require("./routes/vault");
 const { testCloudinaryConnection } = require("./config/cloudinary");
 const { testSupabaseConnection } = require("./config/supabase");
 
@@ -55,6 +56,7 @@ app.get("/", (req, res) => {
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/vault", vaultRoutes);
 
 // 404 Route Handler
 app.use((req, res) => {

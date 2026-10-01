@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, ReactNode, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useState } from "react";
 import {
   BadgeCheck,
   CheckCircle2,
@@ -49,6 +49,24 @@ export default function SunetraAdminPage() {
 
   const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
+  useEffect(() => {
+    if (!isAdmin) return;
+    fetch("/api/admin/vault/resources")
+      .then((response) => response.json())
+      .then((result) => {
+        if (!result.success) return;
+        setUploads((result.data || []).map((row: any) => ({
+          id: row.id,
+          title: row.title,
+          subject: row.subject_code,
+          contributor: row.contributor_name,
+          type: row.resource_type,
+          status: row.status === "PENDING" ? "Pending" : row.status === "APPROVED" ? "Approved" : "Rejected",
+        })));
+      })
+      .catch(() => undefined);
+  }, [isAdmin]);
+
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
     setLoginError(null);
@@ -67,7 +85,12 @@ export default function SunetraAdminPage() {
     }
   };
 
-  const updateUpload = (id: string, status: PendingUpload["status"]) => {
+  const updateUpload = async (id: string, status: PendingUpload["status"]) => {
+    const response = await fetch("/api/admin/vault/resources", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status: status.toUpperCase() }) });
+    if (!response.ok) {
+      setToast("Unable to update this upload.");
+      return;
+    }
     setUploads((current) => current.map((item) => item.id === id ? { ...item, status } : item));
     setToast(`Upload ${status.toLowerCase()}.`);
   };

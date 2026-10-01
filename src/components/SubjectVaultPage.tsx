@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -22,6 +22,7 @@ import Navbar from "@/components/Navbar";
 import { MOCK_VAULT_ITEMS, VaultItem } from "@/data/mockData";
 
 type ResourceKind = "SYLLABUS" | "NOTES" | "PYQ";
+const API_BASE = process.env.NEXT_PUBLIC_SERVER_URL || "https://college-nexus-rjln.onrender.com";
 
 const sectionConfig: Array<{ kind: ResourceKind; title: string; description: string }> = [
   { kind: "SYLLABUS", title: "Syllabus", description: "Official semester scope, units, outcomes, and recommended reading." },
@@ -30,7 +31,7 @@ const sectionConfig: Array<{ kind: ResourceKind; title: string; description: str
 ];
 
 export default function SubjectVaultPage({ code }: { code: string }) {
-  const { profile } = useAuth();
+  const { profile, session } = useAuth();
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [resources, setResources] = useState<VaultItem[]>(() =>
     MOCK_VAULT_ITEMS.filter((item) => item.subjectCode.toLowerCase() === code.toLowerCase())
@@ -49,6 +50,40 @@ export default function SubjectVaultPage({ code }: { code: string }) {
   const subjectName = subject?.subjectName || "Academic Subject";
   const department = subject?.department || "CSE";
   const semester = subject?.semester || 1;
+
+  useEffect(() => {
+    if (!profile) return;
+    let active = true;
+    fetch(`${API_BASE}/api/vault/resources?subject_code=${encodeURIComponent(subjectCode)}`, {
+      headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : undefined,
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (!active || !result.success) return;
+        const savedResources: VaultItem[] = (result.data || []).map((row: any) => ({
+          id: row.id,
+          title: row.title,
+          subjectCode: row.subject_code,
+          subjectName: row.subject_name,
+          department: row.department,
+          semester: row.semester,
+          type: row.resource_type === "PYQ" ? "PYQ" : row.resource_type === "SYLLABUS" ? "Syllabus" : "Notes",
+          year: new Date(row.created_at).getFullYear().toString(),
+          contributor: row.contributor_name,
+          contributorRoll: row.contributor_roll,
+          verified: row.is_cr_verified || row.status === "APPROVED",
+          sha256: row.file_hash,
+          downloads: 0,
+          pages: 0,
+          date: new Date(row.created_at).toLocaleDateString(),
+        }));
+        setResources(savedResources);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [profile, session?.access_token, subjectCode]);
 
   const groupedResources = useMemo(() => ({
     SYLLABUS: resources.filter((item) => item.type === "Syllabus"),
@@ -83,7 +118,11 @@ export default function SubjectVaultPage({ code }: { code: string }) {
     formData.append("resource_type", uploadKind.toUpperCase());
 
     try {
-      const response = await fetch("/api/vault/resources", { method: "POST", body: formData });
+      const response = await fetch(`${API_BASE}/api/vault/resources`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+        body: formData,
+      });
       const result = await response.json();
       if (!response.ok || !result.success) {
         throw new Error(result?.error?.message || "Vault upload failed.");
