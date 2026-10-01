@@ -46,14 +46,14 @@ export default function Home() {
       {/* 7. Affiliated KGEC Guilds & Technical Societies Strip */}
       <SocietiesRibbon />
 
-      {/* 8. Kind Words from Amazing Students & Alumni (Spotlight Photo + 3 Stacked Reviews) */}
+      {/* 8. Interactive Campus Explorer */}
+      <CampusExplorer onOpenLoginModal={() => setLoginModalOpen(true)} />
+
+      {/* 9. Kind Words from Amazing Students & Alumni (Spotlight Photo + 3 Stacked Reviews) */}
       <TestimonialsSection />
 
-      {/* 9. A Seamless Campus Flow (4 Steps) + Interactive Accordion FAQ */}
+      {/* 10. A Seamless Campus Flow (4 Steps) + Interactive Accordion FAQ */}
       <CampusFlowFAQ />
-
-      {/* 10. Interactive Campus Explorer (Matching "Interactive Menu Explorer" in Reference Screenshot) */}
-      <CampusExplorer onOpenLoginModal={() => setLoginModalOpen(true)} />
 
       {/* 11. The Minds Behind the Intranet (Dev Community KGEC Student Leads & Mentors) */}
       <MindsSection />

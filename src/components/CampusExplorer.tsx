@@ -203,7 +203,7 @@ export default function CampusExplorer({
   };
 
   return (
-    <section id="explorer" className="py-14 sm:py-20 relative bg-transparent overflow-visible">
+    <section id="explorer" className="relative overflow-visible border-y border-[#c79e4d]/25 bg-[#08130d]/65 py-14 sm:py-20 bg-campus-grid">
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         
         {/* Header Section positioned cleanly over the library background */}
