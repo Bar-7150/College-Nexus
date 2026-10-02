@@ -1,60 +1,94 @@
 # College Nexus
 
-> Engineering students lose precious study time and academic equipment because campus communication is fragmented across chaotic, unindexed WhatsApp groups.
+> An authenticated collegiate intranet and academic portal designed to replace fragmented WhatsApp groups with an authenticated, roll-number-verified academic hub for engineering students.
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](https://nexusmakautkgec.vercel.app)
+[![Repo](https://img.shields.io/badge/GitHub-Repo-black?style=for-the-badge&logo=github)](https://github.com/Bar-7150/College-Nexus)
 
 ---
 
-## The Idea
+## Preview
 
-College Nexus unifies the fragmented collegiate experience into a single, high-speed intranet progressive web app tailored for engineering campuses like KGEC. Instead of digging through ephemeral group chats for exam question papers, missing urgent placement deadlines, or losing expensive lab instruments, students access a structured, taxonomy-driven repository with cryptographic duplicate rejection and a private lost-and-found recovery workflow. By replacing noise with an authenticated, roll-number-verified academic hub, College Nexus eliminates digital chaos and fosters student-to-student resource reuse.
-
----
-
-## Sketch
-
-<!-- Excalidraw only. The static export below is the supplied architecture sketch. -->
-
-![Sketch](./docs/sketch.png)
-
-[View live board (Excalidraw)](https://excalidraw.com/#json=ZdbV_98_QA8lBqWh4aku1,nrO2Iy2e8zKlIU-QbdszBA)
-
-> The static backup is the supplied technical approach sketch from Excalidraw.
+| Desktop | Mobile |
+|---|---|
+| ![desktop](./screenshots/desktop.png) | ![mobile](./screenshots/mobile.png) |
 
 ---
 
-## Documents
+## What It Does
 
-- [Product Requirements](./docs/PRD.md)
+College Nexus unifies the fragmented engineering college experience into an authenticated, high-performance academic intranet. Engineering students lose precious study hours and laboratory equipment across noisy WhatsApp group chats. With College Nexus, students can instantly discover and download previous year question papers (PYQs) and syllabus notes filtered by department and semester, securely report and privately claim lost campus items without exposing phone numbers, and trade lab equipment and engineering textbooks at zero commission.
+
+---
+
+## Features
+
+- **Academic Vault** — Search and filter semester-wise PYQs and study notes with real-time taxonomy filtering and cryptographic duplicate prevention.
+- **Recovery Feed (Lost & Found)** — Anonymous campus lost-and-found reporting with category tagging and private claim verification to prevent public phone exposure.
+- **Peer Commerce (Canteen Marketplace)** — Zero-commission peer-to-peer exchange for engineering calculators, drafters, aprons, and textbooks.
+- **Institutional Roll Verification** — Roll-authenticated student profiles with department badges and institutional identity validation.
+- **Campus Community Guilds** — Departmental discussion feeds and student communities with spam-free collegiate discourse.
+
+---
+
+## Planning Docs
+
+- [PRD](./docs/PRD.md)
 - [Architecture](./docs/ARCHITECTURE.md)
-- [API Spec](./docs/API_SPEC.md)
 - [Roadmap](./docs/ROADMAP.md)
-- [Requirements](./docs/REQUIREMENTS.md)
+
+**Deviations from the plan:** None. The core frontend architecture strictly follows the original Level 1 PRD specifications, delivering the Academic Vault, Recovery Feed, Peer Marketplace, and Institutional Roll Verification with responsive mobile-first views and live database metrics.
 
 ---
 
-## Planned Stack
+## Tech Stack
 
-| Layer | Technology | Why |
-|---|---|---|
-| Framework | Next.js 14 App Router (React + TypeScript) | Delivers server-side rendering for instant First Contentful Paint, modular API routes without separate server maintenance, and seamless PWA manifest integration for mobile installability. |
-| Database | PostgreSQL (hosted on Supabase) | Enforces strict relational foreign keys across departmental hierarchies and natively supports Row Level Security (RLS) for privacy. |
-| Auth | Supabase Auth | Provides turnkey JWT session handling, secure HTTP-only cookies, and customizable metadata claims for institutional roll numbers and role-based permissions without rolling custom crypto code. |
-| Hosting | Vercel (Edge CDN) + Supabase Cloud | Provides managed deployment, authentication, relational data, and edge delivery for the Next.js client and API routes. |
-| Object Storage | Cloudinary | Stores PDFs and other uploaded assets separately from application and relational data. |
-| AI / ML | Content validation and study assistance model | Checks uploaded content and approved sources, then powers study assistance and verified-source answers. |
-
----
-
-## What I'm Building Toward
-
-One paragraph per level, written before you start building it:
-
-**Kenshi (frontend):** At Kenshi, I will deliver a complete, highly polished Progressive Web App (PWA) client built with Next.js 14 and Tailwind CSS that operates entirely on high-fidelity mock data. Visually, students will experience a responsive mobile-first shell featuring sticky search, departmental taxonomy dropdowns, and bottom navigation. Functionally, users will be able to browse and filter previous year question papers (PYQs) and notes by subject code in Campus Vault, inspect official circulars and lost equipment cards with interactive private claim modals on The Board, explore used drawing instruments and textbooks in the Marketplace with slide-out seller chat drawers, and view verified student profile badges with masked telephone numbers.
-
-**Samurai (full-stack):** At Samurai, I will replace all mock interactions with an end-to-end production backend powered by PostgreSQL on Supabase, authenticated via Supabase Auth with student roll-number format verification. I will implement strict Row Level Security (RLS) policies so students can only modify their own items while Class Representatives (`CR`) and Admins hold broadcast permissions. Cloudinary will store PDF notes, item photos, and other uploaded assets, with client-side SHA-256 pre-flight hashing rejecting duplicate files. Real-time direct messaging and item claim handovers will use WebRTC/WebSockets, complemented by schedule planning across college routine, Google Classroom, and MAR history.
-
-**Shogun (production):** At Shogun, College Nexus will transition into a battle-tested, production-deployed system hosted on Vercel and Supabase Cloud, validated by onboarding at least 25 active, verified students across two distinct engineering departments (CSE and ECE) at Kalyani Government Engineering College. Success will be evidenced by students downloading 50+ verified exam resources, resolving real Lost & Found claims and Marketplace exchanges, and receiving category-filtered PWA web push notifications for urgent academic updates. Additionally, I will demonstrate AI study assistance that checks approved campus Vault sources and returns verified-source answers.
+| Technology | Purpose |
+|---|---|
+| Next.js 14 (App Router) | Core React framework providing SSR, file-system routing, and high-performance client rendering |
+| TypeScript | Type safety, maintainability, and compile-time contract enforcement |
+| Tailwind CSS | Curated dark luxury styling system (`#070e0a` obsidian and `#c79e4d` gold palette) |
+| Lucide React | Lightweight, consistent iconography across all interface modules |
+| Supabase (Auth & DB) | Institutional user management, live stats aggregation, and academic resource metadata |
+| Cloudinary | Optimized storage and CDN delivery for student avatar uploads and document attachments |
+| Vercel | Production hosting, edge network CDN distribution, and continuous deployment |
 
 ---
 
-*Submitted to Journey to Mastery — Level 1: Ronin*
+## Run Locally
+
+```bash
+git clone https://github.com/Bar-7150/College-Nexus.git
+cd College-Nexus
+npm install
+cp .env.example .env.local
+# fill in your .env.local values (Supabase, Cloudinary credentials)
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to explore College Nexus.
+
+---
+
+## Environment Variables
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Public API endpoint URL for Supabase backend project |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anonymous client key for client-side queries |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-side administrative key for verification workflows and stats count |
+| `NEXT_PUBLIC_ADMIN_EMAIL` | Administrator email address authorized for privileged moderation |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud identifier for media uploads |
+| `CLOUDINARY_API_KEY` | API key for authenticated server-side Cloudinary operations |
+| `CLOUDINARY_API_SECRET` | Secret key for Cloudinary asset signature validation |
+| `NEXT_PUBLIC_SERVER_URL` | Optional auxiliary backend server endpoint for real-time services |
+
+---
+
+## What I Learned
+
+Designing College Nexus pushed me to master dark luxury visual hierarchy, specifically balancing high-contrast emerald obsidian glassmorphism with readable gold typography that feels authoritative rather than noisy. The most challenging aspect was architecting responsive layout primitives that scale cleanly from compact 375px mobile screens to wide 1280px desktops without layout shift or truncated data. I am most proud of the custom frosted glass scroll-reveal animations and the live metrics counters, which bridge instant visual feedback with live collegiate database activity.
+
+---
+
+*Submitted to Journey to Mastery — Level 2: Kenshi*
