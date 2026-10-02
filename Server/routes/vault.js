@@ -2,21 +2,30 @@ const express = require("express");
 const crypto = require("crypto");
 const router = express.Router();
 const upload = require("../middleware/upload");
-const { requireAuth } = require("../middleware/auth");
+const { requireAuth, optionalAuth } = require("../middleware/auth");
 const { getSupabaseAdmin } = require("../config/supabase");
 const { uploadBufferToCloudinary, deleteFromCloudinary } = require("../config/cloudinary");
 
 const ALLOWED_DEPARTMENTS = new Set(["CSE", "ECE", "EE", "ME", "IT"]);
 const ALLOWED_RESOURCE_TYPES = new Set(["NOTES", "PYQ", "SYLLABUS"]);
 
-router.get("/resources", requireAuth, async (req, res, next) => {
+router.get("/resources", optionalAuth, async (req, res, next) => {
   try {
     const subjectCode = String(req.query.subject_code || "").trim().toUpperCase();
     const resourceId = String(req.query.id || "").trim();
+    const department = String(req.query.department || "").trim().toUpperCase();
+    const semester = req.query.semester ? Number(req.query.semester) : null;
+
     const supabase = getSupabaseAdmin();
     let query = supabase.from("vault_resources").select("*").order("created_at", { ascending: false });
     if (subjectCode) query = query.eq("subject_code", subjectCode);
     if (resourceId) query = query.eq("id", resourceId);
+    if (department && department !== "ALL" && ALLOWED_DEPARTMENTS.has(department)) {
+      query = query.eq("department", department);
+    }
+    if (semester && Number.isInteger(semester) && semester >= 1 && semester <= 8) {
+      query = query.eq("semester", semester);
+    }
     const { data, error } = await query;
     if (error) return res.status(500).json({ success: false, error: { code: "DATABASE_READ_FAILED", message: error.message } });
     return res.json({ success: true, data: data || [] });

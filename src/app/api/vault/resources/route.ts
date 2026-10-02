@@ -22,12 +22,19 @@ function errorResponse(code: string, message: string, status: number) {
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  if (userError || !user) return errorResponse("AUTH_REQUIRED", "Sign in to access Vault resources.", 401);
+  const searchParams = new URL(request.url).searchParams;
+  const subjectCode = searchParams.get("subject_code")?.toUpperCase();
+  const department = searchParams.get("department")?.toUpperCase();
+  const semester = searchParams.get("semester");
 
-  const subjectCode = new URL(request.url).searchParams.get("subject_code")?.toUpperCase();
   let query = supabase.from("vault_resources").select("*").order("created_at", { ascending: false });
   if (subjectCode) query = query.eq("subject_code", subjectCode);
+  if (department && department !== "ALL" && ALLOWED_DEPARTMENTS.has(department)) {
+    query = query.eq("department", department);
+  }
+  if (semester && Number(semester) >= 1 && Number(semester) <= 8) {
+    query = query.eq("semester", Number(semester));
+  }
   const { data, error } = await query;
   if (error) return errorResponse("DATABASE_READ_FAILED", error.message, 500);
   return NextResponse.json({ success: true, data: data || [] });

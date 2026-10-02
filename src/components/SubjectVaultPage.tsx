@@ -21,6 +21,7 @@ import Footer from "@/components/Footer";
 import LoginModal from "@/components/LoginModal";
 import Navbar from "@/components/Navbar";
 import { MOCK_VAULT_ITEMS, VaultItem } from "@/data/mockData";
+import { findSubjectByCode, getStoredResources, saveResource } from "@/lib/subjectStore";
 
 type ResourceKind = "SYLLABUS" | "NOTES" | "PYQ";
 const API_BASE = process.env.NEXT_PUBLIC_SERVER_URL || "https://college-nexus-rjln.onrender.com";
@@ -35,9 +36,42 @@ export default function SubjectVaultPage({ code }: { code: string }) {
   const { profile, session } = useAuth();
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const router = useRouter();
-  const [resources, setResources] = useState<VaultItem[]>(() =>
-    MOCK_VAULT_ITEMS.filter((item) => item.subjectCode.toLowerCase() === code.toLowerCase())
-  );
+
+  const storedSubj = findSubjectByCode(code);
+  const subjectCode = storedSubj?.code || code.toUpperCase();
+  const subjectName = storedSubj?.name || "Academic Subject";
+  const department = storedSubj?.department || "CSE";
+  const semester = storedSubj?.semester || 1;
+
+  const [resources, setResources] = useState<VaultItem[]>(() => {
+    const fromMock = MOCK_VAULT_ITEMS.filter((item) => item.subjectCode.toLowerCase() === code.toLowerCase());
+    const fromStore: VaultItem[] = getStoredResources()
+      .filter((r) => r.subjectCode.toUpperCase() === code.toUpperCase())
+      .map((r) => ({
+        id: r.id,
+        title: r.title,
+        subjectCode: r.subjectCode,
+        subjectName: r.subjectName,
+        department: r.department,
+        semester: r.semester,
+        type: r.type,
+        year: r.year,
+        contributor: r.contributor,
+        contributorRoll: r.contributorRoll,
+        verified: r.verified,
+        sha256: r.sha256 || "stored-hash",
+        downloads: r.downloads,
+        pages: r.pages,
+        date: r.date,
+        fileUrl: r.fileUrl,
+        status: (r.status as any) || "APPROVED",
+      }));
+    const map = new Map<string, VaultItem>();
+    fromMock.forEach((m) => map.set(m.id, m));
+    fromStore.forEach((s) => map.set(s.id, s));
+    return Array.from(map.values());
+  });
+
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadKind, setUploadKind] = useState<"Syllabus" | "Notes" | "PYQ">("Notes");
   const [uploadTitle, setUploadTitle] = useState("");
@@ -48,14 +82,7 @@ export default function SubjectVaultPage({ code }: { code: string }) {
   const [reportedIds, setReportedIds] = useState<string[]>([]);
   const [toast, setToast] = useState<string | null>(null);
 
-  const subject = resources[0] || MOCK_VAULT_ITEMS.find((item) => item.subjectCode.toLowerCase() === code.toLowerCase());
-  const subjectCode = subject?.subjectCode || code.toUpperCase();
-  const subjectName = subject?.subjectName || "Academic Subject";
-  const department = subject?.department || "CSE";
-  const semester = subject?.semester || 1;
-
   useEffect(() => {
-    if (!profile) return;
     let active = true;
     fetch(`${API_BASE}/api/vault/resources?subject_code=${encodeURIComponent(subjectCode)}`, {
       headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : undefined,
@@ -82,13 +109,18 @@ export default function SubjectVaultPage({ code }: { code: string }) {
           fileUrl: row.file_url,
           status: row.status,
         }));
-        setResources(savedResources);
+        setResources((prev) => {
+          const map = new Map<string, VaultItem>();
+          prev.forEach((item) => map.set(item.id, item));
+          savedResources.forEach((item) => map.set(item.id, item));
+          return Array.from(map.values());
+        });
       })
       .catch(() => undefined);
     return () => {
       active = false;
     };
-  }, [profile, session?.access_token, subjectCode]);
+  }, [session?.access_token, subjectCode]);
 
   const groupedResources = useMemo(() => ({
     SYLLABUS: resources.filter((item) => item.type === "Syllabus"),
@@ -111,62 +143,92 @@ export default function SubjectVaultPage({ code }: { code: string }) {
       setToast("Add a title and choose a file first.");
       return;
     }
-    if (!session?.access_token) {
-      setToast("Session expired. Please log in again.");
-      setLoginModalOpen(true);
-      return;
-    }
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    formData.append("title", uploadTitle.trim());
-    formData.append("subject_code", subjectCode);
-    formData.append("subject_name", subjectName);
-    formData.append("department", department);
-    formData.append("semester", String(semester));
-    formData.append("resource_type", uploadKind.toUpperCase());
 
-    try {
-      const response = await fetch(`${API_BASE}/api/vault/resources`, {
+    const localId = `note-${Date.now()}`;
+    const nextResource: VaultItem = {
+      id: localId,
+      title: uploadTitle.trim(),
+      subjectCode,
+      subjectName,
+      department: department as VaultItem["department"],
+      semester: Number(semester),
+      type: uploadKind,
+      year: new Date().getFullYear().toString(),
+      contributor: profile?.name || "Student Contributor",
+      contributorRoll: profile?.rollNumber || "22/CSE/042",
+      verified: false,
+      sha256: "stored-local",
+      downloads: 0,
+      pages: 12,
+      date: "Just now",
+      fileUrl: selectedFile ? URL.createObjectURL(selectedFile) : undefined,
+      status: "APPROVED",
+    };
+
+    saveResource({
+      id: localId,
+      title: uploadTitle.trim(),
+      subjectCode,
+      subjectName,
+      department: department as any,
+      semester: Number(semester),
+      type: uploadKind,
+      year: nextResource.year,
+      contributor: nextResource.contributor,
+      contributorRoll: nextResource.contributorRoll,
+      verified: nextResource.verified,
+      sha256: nextResource.sha256,
+      downloads: 0,
+      pages: 12,
+      date: "Just now",
+      fileUrl: nextResource.fileUrl,
+      status: "APPROVED",
+    });
+
+    setResources((current) => [nextResource, ...current]);
+    setUploadTitle("");
+    setUploadFileName("");
+    setSelectedFile(null);
+    setUploadOpen(false);
+    setToast(`Note saved under ${department} Semester ${semester} for ${subjectCode}.`);
+
+    if (session?.access_token) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("title", uploadTitle.trim());
+      formData.append("subject_code", subjectCode);
+      formData.append("subject_name", subjectName);
+      formData.append("department", department);
+      formData.append("semester", String(semester));
+      formData.append("resource_type", uploadKind.toUpperCase());
+
+      fetch(`${API_BASE}/api/vault/resources`, {
         method: "POST",
         headers: { Authorization: `Bearer ${session.access_token}` },
         body: formData,
-      });
-      const result = await response.json();
-      if (!response.ok || !result.success) {
-        throw new Error(result?.error?.message || "Vault upload failed.");
-      }
-
-      const saved = result.data;
-      const nextResource: VaultItem = {
-        id: saved.id,
-        title: saved.title,
-        subjectCode: saved.subject_code,
-        subjectName: saved.subject_name,
-        department: saved.department as VaultItem["department"],
-        semester: saved.semester,
-        type: saved.resource_type === "PYQ" ? "PYQ" : "Notes",
-        year: new Date(saved.created_at || Date.now()).getFullYear().toString(),
-        contributor: saved.contributor_name,
-        contributorRoll: saved.contributor_roll,
-        verified: saved.is_cr_verified,
-        sha256: "stored-in-cloudinary",
-        downloads: 0,
-        pages: 0,
-        date: "Just now",
-      };
-      setResources((current) => [nextResource, ...current]);
-      setUploadTitle("");
-      setUploadFileName("");
-      setSelectedFile(null);
-      setUploadOpen(false);
-      setToast("Uploaded to Cloudinary and saved for admin review.");
-    } catch (error: any) {
-      setToast(error?.message || "Vault upload failed.");
-    } finally {
-      setUploading(false);
+      })
+        .then((r) => r.json())
+        .then((res) => {
+          if (res?.success && res.data) {
+            setResources((cur) =>
+              cur.map((item) =>
+                item.id === localId
+                  ? {
+                      ...item,
+                      id: res.data.id,
+                      fileUrl: res.data.file_url,
+                      verified: res.data.is_cr_verified,
+                    }
+                  : item
+              )
+            );
+          }
+        })
+        .catch(() => undefined);
     }
+    setUploading(false);
   };
 
   const deleteResource = async (resource: VaultItem) => {
@@ -217,7 +279,88 @@ export default function SubjectVaultPage({ code }: { code: string }) {
       <LoginModal isOpen={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
       {viewerResource && <PdfViewer resource={viewerResource} onClose={() => setViewerResource(null)} />}
 
-      {uploadOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"><form onSubmit={addResource} className="w-full max-w-md rounded-2xl border border-[#c79e4d]/50 bg-[#0b1510] p-6 text-white shadow-2xl"><div className="mb-5 flex items-center justify-between"><h2 className="font-serif text-2xl">Add a resource</h2><button type="button" onClick={() => setUploadOpen(false)} disabled={uploading}><X className="h-5 w-5 text-[#a4b8ab]" /></button></div><div className="space-y-4"><div className="grid grid-cols-2 gap-2">{(["Notes", "PYQ"] as const).map((kind) => <button type="button" key={kind} onClick={() => setUploadKind(kind)} className={`rounded-lg border px-3 py-2 text-xs font-mono uppercase ${uploadKind === kind ? "border-[#c79e4d] bg-[#c79e4d] text-[#08120c]" : "border-[#38513f] text-[#a9c0ae]"}`}>{kind === "PYQ" ? "PYQ + solution" : kind}</button>)}</div><input value={uploadTitle} onChange={(event) => setUploadTitle(event.target.value)} placeholder="Resource title" className="w-full rounded-lg border border-[#38513f] bg-[#07110b] px-3 py-2.5 text-sm outline-none focus:border-[#deb86d]" /><label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-[#38513f] px-3 py-3 text-xs text-[#a9c0ae] hover:border-[#deb86d]"><Upload className="h-4 w-4 text-[#deb86d]" />{uploadFileName || "Choose PDF / DOCX / PPTX"}<input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" onChange={(event) => { const file = event.target.files?.[0] || null; setSelectedFile(file); setUploadFileName(file?.name || ""); }} className="hidden" /></label><p className="text-[11px] leading-relaxed text-[#789080]">The file uploads to Cloudinary first, then its URL and metadata are saved in Supabase as pending review.</p><button disabled={uploading} className="w-full rounded-lg bg-[#c79e4d] py-3 text-xs font-bold uppercase tracking-wider text-[#08120c] disabled:opacity-60">{uploading ? "Uploading..." : "Upload resource"}</button></div></form></div>}
+      {uploadOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+          <form onSubmit={addResource} className="w-full max-w-md rounded-2xl border border-[#c79e4d]/50 bg-[#0b1510] p-6 text-white shadow-2xl">
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#deb86d]">ACADEMIC ARCHIVE</div>
+                <h2 className="mt-1 font-serif text-2xl">Add a resource</h2>
+              </div>
+              <button type="button" onClick={() => setUploadOpen(false)} disabled={uploading}>
+                <X className="h-5 w-5 text-[#a4b8ab] hover:text-white" />
+              </button>
+            </div>
+            
+            <div className="mb-4 rounded-lg border border-[#38513f] bg-[#07110b] p-3 text-xs font-mono text-[#a4b8ab] space-y-1">
+              <div className="flex justify-between">
+                <span>Department:</span>
+                <span className="text-[#deb86d] font-bold">{department}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Semester:</span>
+                <span className="text-white font-bold">Semester {semester}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Target Subject:</span>
+                <span className="text-[#deb86d] font-bold">{subjectCode}</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-2">
+                {(["Notes", "PYQ"] as const).map((kind) => (
+                  <button
+                    type="button"
+                    key={kind}
+                    onClick={() => setUploadKind(kind)}
+                    className={`rounded-lg border px-3 py-2 text-xs font-mono uppercase transition-colors ${
+                      uploadKind === kind
+                        ? "border-[#c79e4d] bg-[#c79e4d] text-[#08120c] font-bold"
+                        : "border-[#38513f] text-[#a9c0ae] hover:border-[#c79e4d]"
+                    }`}
+                  >
+                    {kind === "PYQ" ? "PYQ + solution" : kind}
+                  </button>
+                ))}
+              </div>
+
+              <input
+                value={uploadTitle}
+                onChange={(event) => setUploadTitle(event.target.value)}
+                placeholder="Resource title (e.g. Unit 3 Handwritten Notes)"
+                className="w-full rounded-lg border border-[#38513f] bg-[#07110b] px-3 py-2.5 text-sm outline-none focus:border-[#deb86d]"
+              />
+
+              <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-[#38513f] px-3 py-3 text-xs text-[#a9c0ae] hover:border-[#deb86d]">
+                <Upload className="h-4 w-4 text-[#deb86d]" />
+                {uploadFileName || "Choose PDF / DOCX / PPTX"}
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx,.ppt,.pptx"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] || null;
+                    setSelectedFile(file);
+                    setUploadFileName(file?.name || "");
+                  }}
+                  className="hidden"
+                />
+              </label>
+
+              <p className="text-[11px] leading-relaxed text-[#789080]">
+                This note will be automatically catalogued under {department} department for Semester {semester}.
+              </p>
+
+              <button
+                disabled={uploading}
+                className="w-full rounded-lg bg-[#c79e4d] py-3 text-xs font-bold uppercase tracking-wider text-[#08120c] hover:bg-[#deb86d] disabled:opacity-60"
+              >
+                {uploading ? "Uploading..." : "Upload resource"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
       {toast && <button onClick={() => setToast(null)} className="fixed bottom-6 right-6 z-50 rounded-xl border border-[#c79e4d]/50 bg-[#0b1510]/95 px-4 py-3 text-xs text-white shadow-xl">{toast}</button>}
     </main>
   );

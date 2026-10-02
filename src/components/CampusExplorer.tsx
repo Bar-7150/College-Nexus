@@ -9,11 +9,22 @@ import {
   MOCK_LOST_FOUND,
   MOCK_MARKETPLACE,
   VaultItem,
-  LostFoundItem,
-  NoticeItem,
-  MarketplaceItem,
 } from "@/data/mockData";
+import {
+  getStoredSubjects,
+  getStoredResources,
+  getStoredNotices,
+  getStoredLostFound,
+  getStoredMarketplace,
+  SubjectNode,
+  VaultResourceItem,
+  NoticeItem,
+  LostFoundItem,
+  MarketplaceItem,
+} from "@/lib/subjectStore";
 import ClaimModal from "./ClaimModal";
+import LostFoundModal from "./LostFoundModal";
+import MarketplaceModal from "./MarketplaceModal";
 import ScrollReveal from "./ScrollReveal";
 import {
   Search,
@@ -28,6 +39,7 @@ import {
   ExternalLink,
   BookOpen,
   ShoppingBag,
+  PackagePlus,
   Sparkles,
   ChevronRight,
   ChevronLeft,
@@ -46,7 +58,7 @@ interface CampusExplorerProps {
     department: string;
     name: string;
     code: string;
-    semester: string;
+    semester: string | number;
     description: string;
   }>;
 }
@@ -58,24 +70,55 @@ export default function CampusExplorer({
   beforeFilters,
   additionalSubjects = [],
 }: CampusExplorerProps) {
-    const { profile } = useAuth();
+  const { profile } = useAuth();
   const [activeCategory, setActiveCategory] = useState<
     "ALL" | "VAULT" | "NOTICES" | "LOSTFOUND" | "MARKETPLACE" | "CLUBS"
   >(initialCategory);
   const [deptFilter, setDeptFilter] = useState<string>(initialDeptFilter);
+  const [semesterFilter, setSemesterFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedClaimItem, setSelectedClaimItem] = useState<LostFoundItem | null>(null);
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null);
   const [selectedVaultItem, setSelectedVaultItem] = useState<VaultItem | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isLostFoundModalOpen, setIsLostFoundModalOpen] = useState(false);
+  const [isMarketplaceModalOpen, setIsMarketplaceModalOpen] = useState(false);
+
+  const [storedSubjects, setStoredSubjects] = useState<SubjectNode[]>(() => getStoredSubjects());
+  const [storedResources, setStoredResources] = useState<VaultResourceItem[]>(() => getStoredResources());
+  const [storedNotices, setStoredNotices] = useState<NoticeItem[]>(() => getStoredNotices());
+  const [storedLostFound, setStoredLostFound] = useState<LostFoundItem[]>(() => getStoredLostFound());
+  const [storedMarketplace, setStoredMarketplace] = useState<MarketplaceItem[]>(() => getStoredMarketplace());
 
   const ITEMS_PER_PAGE = 6; // Maximum 2 rows (3 columns x 2 rows)
 
-  // Reset page when category, branch, or search query changes
+  // Sync with prop changes when navigating between department routes
+  useEffect(() => {
+    setActiveCategory(initialCategory);
+  }, [initialCategory]);
+
+  useEffect(() => {
+    setDeptFilter(initialDeptFilter);
+  }, [initialDeptFilter]);
+
+  // Sync with local storage events when a subject, note, notice, lost/found, or marketplace item is created
+  useEffect(() => {
+    const syncData = () => {
+      setStoredSubjects(getStoredSubjects());
+      setStoredResources(getStoredResources());
+      setStoredNotices(getStoredNotices());
+      setStoredLostFound(getStoredLostFound());
+      setStoredMarketplace(getStoredMarketplace());
+    };
+    window.addEventListener("nexus_storage_updated", syncData);
+    return () => window.removeEventListener("nexus_storage_updated", syncData);
+  }, []);
+
+  // Reset page when category, branch, semester, or search query changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeCategory, deptFilter, searchQuery]);
+  }, [activeCategory, deptFilter, semesterFilter, searchQuery]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -96,100 +139,218 @@ export default function CampusExplorer({
       ratingOrStatus: string;
       desc: string;
       actionText: string;
+      isSubject?: boolean;
+      subjectCode?: string;
+      department?: string;
+      semester?: number;
       rawItem?: any;
     }> = [];
 
-    // Vault Items
-    MOCK_VAULT_ITEMS.forEach((v) => {
-      list.push({
-        id: v.id,
-        category: "VAULT",
-        categoryLabel: `${v.type} · ${v.year}`,
-        title: v.title,
-        deptOrMeta: `${v.department} · Sem ${v.semester}`,
-        metaDetail: `${v.pages} Pages PDF · ${v.downloads} Downloads`,
-        ratingOrStatus: "5.0 ★ CR-Verified",
-        desc: `Verified academic notes for ${v.subjectName} (${v.subjectCode}) contributed by ${v.contributor}. Cryptographically verified.`,
-        actionText: "Download Paper",
-        rawItem: v,
-      });
-    });
+    const q = searchQuery.trim().toLowerCase();
 
-    // Notices
-    MOCK_NOTICES.forEach((n) => {
-      list.push({
-        id: n.id,
-        category: "NOTICES",
-        categoryLabel: `${n.category} CIRCULAR`,
-        title: n.title,
-        deptOrMeta: n.department,
-        metaDetail: `${n.issuer} · ${n.expiresIn}`,
-        ratingOrStatus: n.pinned ? "Pinned Notice" : "Official Memo",
-        desc: n.summary,
-        actionText: "Read Memo",
-        rawItem: n,
+    // 1. Academic Vault: Subjects & Notes
+    if (activeCategory === "ALL" || activeCategory === "VAULT") {
+      // Merge subjects from store and props
+      const combinedSubjectsMap = new Map<string, SubjectNode>();
+      storedSubjects.forEach((s) => combinedSubjectsMap.set(s.code.toUpperCase(), s));
+      additionalSubjects.forEach((s) => {
+        if (s?.code && s?.name) {
+          combinedSubjectsMap.set(s.code.toUpperCase(), {
+            department: (s.department || "CSE").toUpperCase() as SubjectNode["department"],
+            semester: Number(s.semester || 1),
+            name: s.name,
+            code: s.code.toUpperCase(),
+            description: s.description || "",
+          });
+        }
       });
-    });
 
-    // Lost & Found
-    MOCK_LOST_FOUND.forEach((lf) => {
-      list.push({
-        id: lf.id,
-        category: "LOSTFOUND",
-        categoryLabel: `LOST & FOUND · ${lf.category.toUpperCase()}`,
-        title: lf.itemName,
-        deptOrMeta: lf.locationFound,
-        metaDetail: `Found: ${lf.dateTime} · ${lf.finderAlias}`,
-        ratingOrStatus: lf.status,
-        desc: `Safely held in custody. Owner must verify confidential distinguishing marks without public phone exposure.`,
-        actionText: "Claim Item",
-        rawItem: lf,
+      // Add Subjects as listings
+      combinedSubjectsMap.forEach((s) => {
+        const matchesDept = deptFilter === "ALL" || s.department.toUpperCase() === deptFilter.toUpperCase();
+        const matchesSem = semesterFilter === "ALL" || String(s.semester) === String(semesterFilter);
+        const matchesQuery =
+          !q ||
+          s.name.toLowerCase().includes(q) ||
+          s.code.toLowerCase().includes(q) ||
+          s.description.toLowerCase().includes(q) ||
+          s.department.toLowerCase().includes(q);
+
+        if (matchesDept && matchesSem && matchesQuery) {
+          list.push({
+            id: `subj-${s.code}`,
+            category: "VAULT",
+            isSubject: true,
+            subjectCode: s.code,
+            categoryLabel: `SUBJECT · ${s.department} SEM ${s.semester}`,
+            title: s.name,
+            deptOrMeta: `${s.code} · ${s.department}`,
+            metaDetail: `Semester ${s.semester} Academic Hub`,
+            ratingOrStatus: "Curriculum Subject",
+            desc: s.description || `Curated study syllabus and note repository for ${s.name} (${s.code}).`,
+            actionText: "Open Subject",
+            department: s.department,
+            semester: s.semester,
+            rawItem: s,
+          });
+        }
       });
-    });
 
-    // Marketplace
-    MOCK_MARKETPLACE.forEach((m) => {
-      list.push({
-        id: m.id,
-        category: "MARKETPLACE",
-        categoryLabel: `MARKETPLACE · ${m.category.toUpperCase()}`,
-        title: m.title,
-        deptOrMeta: `₹${m.price} (Orig ₹${m.originalPrice})`,
-        metaDetail: `${m.sellerYear} (${m.sellerDept}) · ${m.pickupLandmark}`,
-        ratingOrStatus: `${m.condition} Condition`,
-        desc: `Available for direct student-to-student handover at campus canteen or library steps. 0% platform commissions.`,
-        actionText: "Contact Seller",
-        rawItem: m,
+      // Merge Notes & Vault Items
+      const combinedVaultResources: VaultItem[] = [...MOCK_VAULT_ITEMS];
+      storedResources.forEach((r) => {
+        if (!combinedVaultResources.some((item) => item.id === r.id)) {
+          combinedVaultResources.push({
+            id: r.id,
+            title: r.title,
+            subjectCode: r.subjectCode,
+            subjectName: r.subjectName,
+            department: r.department,
+            semester: r.semester,
+            type: r.type,
+            year: r.year,
+            contributor: r.contributor,
+            contributorRoll: r.contributorRoll,
+            verified: r.verified,
+            sha256: r.sha256 || "verified-sha256",
+            downloads: r.downloads,
+            pages: r.pages,
+            date: r.date,
+            fileUrl: r.fileUrl,
+            status: (r.status as any) || "APPROVED",
+          });
+        }
       });
-    });
 
-    // Filter by Category
-    if (activeCategory !== "ALL") {
-      list = list.filter((item) => item.category === activeCategory);
+      combinedVaultResources.forEach((v) => {
+        const matchesDept = deptFilter === "ALL" || v.department.toUpperCase() === deptFilter.toUpperCase();
+        const matchesSem = semesterFilter === "ALL" || String(v.semester) === String(semesterFilter);
+        const matchesQuery =
+          !q ||
+          v.title.toLowerCase().includes(q) ||
+          v.subjectName.toLowerCase().includes(q) ||
+          v.subjectCode.toLowerCase().includes(q) ||
+          v.department.toLowerCase().includes(q) ||
+          v.contributor.toLowerCase().includes(q);
+
+        if (matchesDept && matchesSem && matchesQuery) {
+          list.push({
+            id: `vault-${v.id}`,
+            category: "VAULT",
+            isSubject: false,
+            subjectCode: v.subjectCode,
+            categoryLabel: `${v.type.toUpperCase()} · ${v.year}`,
+            title: v.title,
+            deptOrMeta: `${v.department} · Sem ${v.semester}`,
+            metaDetail: `${v.pages || 0} Pages PDF · ${v.downloads || 0} Downloads`,
+            ratingOrStatus: v.verified ? "5.0 ★ CR-Verified" : "Community Note",
+            desc: `Verified academic notes for ${v.subjectName} (${v.subjectCode}) contributed by ${v.contributor}. Cryptographically verified.`,
+            actionText: "Download Paper",
+            department: v.department,
+            semester: v.semester,
+            rawItem: v,
+          });
+        }
+      });
     }
 
-    // Filter by Department
-    if (deptFilter !== "ALL") {
-      list = list.filter(
-        (item) =>
-          item.deptOrMeta.includes(deptFilter) ||
-          item.title.toLowerCase().includes(deptFilter.toLowerCase())
-      );
+    // 2. Official Notices
+    if (activeCategory === "ALL" || activeCategory === "NOTICES") {
+      storedNotices.forEach((n) => {
+        const noticeDept = (n.department || "").toUpperCase();
+        const matchesDept =
+          deptFilter === "ALL" ||
+          noticeDept.includes(deptFilter.toUpperCase()) ||
+          noticeDept.includes("CAMPUS") ||
+          noticeDept.includes("ALL");
+        const matchesQuery =
+          !q ||
+          n.title.toLowerCase().includes(q) ||
+          n.summary.toLowerCase().includes(q) ||
+          n.department.toLowerCase().includes(q);
+
+        if (matchesDept && matchesQuery) {
+          list.push({
+            id: n.id,
+            category: "NOTICES",
+            categoryLabel: `${n.category} CIRCULAR`,
+            title: n.title,
+            deptOrMeta: n.department,
+            metaDetail: `${n.issuer} · ${n.expiresIn}`,
+            ratingOrStatus: n.pinned ? "Pinned Notice" : "Official Memo",
+            desc: n.summary,
+            actionText: "Read Memo",
+            rawItem: n,
+          });
+        }
+      });
     }
 
-    // Filter by Search Query
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      list = list.filter(
-        (item) =>
-          item.title.toLowerCase().includes(q) ||
-          item.desc.toLowerCase().includes(q) ||
-          item.deptOrMeta.toLowerCase().includes(q)
-      );
+    // 3. Lost & Found
+    if (activeCategory === "ALL" || activeCategory === "LOSTFOUND") {
+      storedLostFound.forEach((lf) => {
+        const matchesQuery =
+          !q ||
+          lf.itemName.toLowerCase().includes(q) ||
+          lf.locationFound.toLowerCase().includes(q) ||
+          lf.category.toLowerCase().includes(q);
+
+        if (matchesQuery) {
+          list.push({
+            id: lf.id,
+            category: "LOSTFOUND",
+            categoryLabel: `LOST & FOUND · ${lf.category.toUpperCase()}`,
+            title: lf.itemName,
+            deptOrMeta: lf.locationFound,
+            metaDetail: `Found: ${lf.dateTime} · ${lf.finderAlias}`,
+            ratingOrStatus: lf.status,
+            desc: `Safely held in custody. Owner must verify confidential distinguishing marks without public phone exposure.`,
+            actionText: "Claim Item",
+            rawItem: lf,
+          });
+        }
+      });
+    }
+
+    // 4. Marketplace
+    if (activeCategory === "ALL" || activeCategory === "MARKETPLACE") {
+      storedMarketplace.forEach((m) => {
+        const matchesQuery =
+          !q ||
+          m.title.toLowerCase().includes(q) ||
+          m.sellerDept.toLowerCase().includes(q) ||
+          m.pickupLandmark.toLowerCase().includes(q);
+
+        if (matchesQuery) {
+          list.push({
+            id: m.id,
+            category: "MARKETPLACE",
+            categoryLabel: `MARKETPLACE · ${m.category.toUpperCase()}`,
+            title: m.title,
+            deptOrMeta: `₹${m.price} (Orig ₹${m.originalPrice})`,
+            metaDetail: `${m.sellerYear} (${m.sellerDept}) · ${m.pickupLandmark}`,
+            ratingOrStatus: `${m.condition} Condition`,
+            desc: `Available for direct student-to-student handover at campus canteen or library steps. 0% platform commissions.`,
+            actionText: "Contact Seller",
+            rawItem: m,
+          });
+        }
+      });
     }
 
     return list;
-  }, [activeCategory, deptFilter, searchQuery]);
+  }, [
+    activeCategory,
+    deptFilter,
+    semesterFilter,
+    searchQuery,
+    storedSubjects,
+    additionalSubjects,
+    storedResources,
+    storedNotices,
+    storedLostFound,
+    storedMarketplace,
+  ]);
 
   const totalPages = Math.ceil(aggregatedCards.length / ITEMS_PER_PAGE);
 
@@ -198,15 +359,6 @@ export default function CampusExplorer({
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     return aggregatedCards.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   }, [aggregatedCards, currentPage, ITEMS_PER_PAGE]);
-
-  const visibleAdditionalSubjects = useMemo(() => {
-    const query = searchQuery.toLowerCase();
-    return additionalSubjects.filter((subject) => {
-      const matchesDepartment = deptFilter === "ALL" || subject.department === deptFilter;
-      const matchesSearch = !query || `${subject.name} ${subject.code} ${subject.description}`.toLowerCase().includes(query);
-      return matchesDepartment && matchesSearch;
-    });
-  }, [additionalSubjects, deptFilter, searchQuery]);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -288,8 +440,69 @@ export default function CampusExplorer({
           </div>
         </div>
 
+        {/* Dynamic Contextual Action Banner for Lost/Found, Marketplace, and Notices */}
+        {activeCategory === "LOSTFOUND" && (
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[#c79e4d]/35 bg-[#070e0a]/80 px-5 py-4 backdrop-blur-md shadow-xl">
+            <div>
+              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-[#deb86d]">
+                <span className="w-2 h-2 rounded-full bg-[#c79e4d] animate-pulse"></span>
+                CAMPUS LOST &amp; FOUND PROTOCOL
+              </div>
+              <p className="mt-1 text-xs text-[#dbe7df]">
+                Anyone can upload lost or found belongings to help campus peers recover items securely.
+              </p>
+            </div>
+            <button
+              onClick={() => setIsLostFoundModalOpen(true)}
+              className="flex shrink-0 items-center gap-2 rounded-lg bg-[#c79e4d] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#08120c] hover:bg-[#deb86d] shadow-md transition-all cursor-pointer"
+            >
+              <PackagePlus className="h-4 w-4" /> Report Lost / Found Item
+            </button>
+          </div>
+        )}
+
+        {activeCategory === "MARKETPLACE" && (
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/35 bg-[#070e0a]/80 px-5 py-4 backdrop-blur-md shadow-xl">
+            <div>
+              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                0% COMMISSION PEER MARKETPLACE
+              </div>
+              <p className="mt-1 text-xs text-[#dbe7df]">
+                Everyone can list study tools, drafters, calculators, and engineering gear for sale.
+              </p>
+            </div>
+            <button
+              onClick={() => setIsMarketplaceModalOpen(true)}
+              className="flex shrink-0 items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#08120c] hover:bg-emerald-400 shadow-md transition-all cursor-pointer"
+            >
+              <ShoppingBag className="h-4 w-4" /> Add Item to Marketplace
+            </button>
+          </div>
+        )}
+
+        {activeCategory === "NOTICES" && (
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[#c79e4d]/30 bg-[#070e0a]/80 px-5 py-4 backdrop-blur-md shadow-xl">
+            <div>
+              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-[#deb86d]">
+                <span className="w-2 h-2 rounded-full bg-[#c79e4d] animate-pulse"></span>
+                OFFICIAL CAMPUS CIRCULARS
+              </div>
+              <p className="mt-1 text-xs text-[#dbe7df]">
+                Examination dates, placement notifications, academic schedules, and emergency alerts.
+              </p>
+            </div>
+            <Link
+              href="/sunetra"
+              className="flex shrink-0 items-center gap-2 rounded-lg bg-[#c79e4d] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#08120c] hover:bg-[#deb86d] shadow-md transition-all cursor-pointer"
+            >
+              <Bell className="h-4 w-4" /> Admin Notice Desk (/sunetra) →
+            </Link>
+          </div>
+        )}
+
         {/* Department Quick Filter Pills */}
-        <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-1 text-xs font-mono">
+        <div className="flex flex-wrap items-center gap-2 mb-4 text-xs font-mono">
           <span className="text-[#deb86d] text-[11px] uppercase mr-1">BRANCH:</span>
           {["ALL", "CSE", "ECE", "EE", "ME", "IT"].map((dept) => (
             <button
@@ -317,24 +530,28 @@ export default function CampusExplorer({
           </span>
         </div>
 
+        {/* Semester Filter Pills (shown for VAULT or ALL) */}
+        {(activeCategory === "ALL" || activeCategory === "VAULT") && (
+          <div className="flex items-center gap-1.5 mb-8 overflow-x-auto pb-1 text-xs font-mono">
+            <span className="text-[#deb86d] text-[11px] uppercase mr-1">SEMESTER:</span>
+            {["ALL", "1", "2", "3", "4", "5", "6", "7", "8"].map((sem) => (
+              <button
+                key={sem}
+                onClick={() => setSemesterFilter(sem)}
+                className={`px-2.5 py-1 rounded-md border text-[11px] transition-colors cursor-pointer backdrop-blur-xs ${
+                  semesterFilter === sem
+                    ? "bg-[#deb86d] border-[#deb86d] text-[#08120c] font-bold shadow-xs"
+                    : "bg-[#070e0a]/40 border-white/15 text-[#a4b8ab] hover:border-[#deb86d] hover:text-white"
+                }`}
+              >
+                {sem === "ALL" ? "All Semesters" : `Sem ${sem}`}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* 3-Column Luxury Card Grid (Maximum 2 rows = 6 items) with 90% Transparent Ultra-Glass and Staggered Animations */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleAdditionalSubjects.map((subject) => (
-            <ScrollReveal key={`subject-${subject.code}`} className="h-full">
-              <Link
-                href={`/vault/subject/${subject.code.toLowerCase()}`}
-                className="group flex h-full flex-col justify-between rounded-2xl border border-[#c79e4d]/45 bg-[#070e0a]/20 p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-[#deb86d] hover:bg-[#070e0a]/35"
-              >
-                <div>
-                  <div className="mb-4 flex items-center justify-between gap-2"><span className="rounded-full border border-[#c79e4d]/40 bg-[#c79e4d]/10 px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-wider text-[#deb86d]">NEW SUBJECT</span><span className="text-[10px] font-mono text-[#cbe0d3]">{subject.department} · Sem {subject.semester}</span></div>
-                  <h3 className="font-serif text-xl font-bold leading-snug text-white transition-colors group-hover:text-[#deb86d]">{subject.name}</h3>
-                  <p className="mt-2 text-xs font-mono text-[#deb86d]">{subject.code}</p>
-                  <p className="mt-4 text-xs leading-relaxed text-[#dbe7de]">{subject.description || "Student-created subject workspace ready for notes, PYQs, and syllabus resources."}</p>
-                </div>
-                <div className="mt-6 flex items-center justify-between border-t border-white/15 pt-4 text-[11px] font-mono text-[#9bb0a2]"><span>KGEC TAXONOMY</span><span className="text-[#deb86d]">OPEN SUBJECT →</span></div>
-              </Link>
-            </ScrollReveal>
-          ))}
           {displayedCards.map((card, idx) => (
             <ScrollReveal key={card.id} delay={(idx % 3) * 120} className="h-full">
               <div
@@ -352,9 +569,9 @@ export default function CampusExplorer({
                   </div>
 
                   {/* Card Title */}
-                  {card.category === "VAULT" ? (
+                  {card.category === "VAULT" && card.subjectCode ? (
                     <Link
-                      href={`/vault/subject/${card.rawItem.subjectCode.toLowerCase()}`}
+                      href={`/vault/subject/${card.subjectCode.toLowerCase()}`}
                       className="block text-lg font-serif font-bold text-white tracking-tight mb-2 leading-snug group-hover:text-[#deb86d] transition-colors drop-shadow-sm"
                     >
                       {card.title}
@@ -388,39 +605,49 @@ export default function CampusExplorer({
                     KGEC INTEL
                   </span>
 
-                  <button
-                    onClick={() => {
-                      if (card.category === "LOSTFOUND") {
-                        if (!profile) {
-                          onOpenLoginModal?.();
-                          return;
+                  {card.isSubject && card.subjectCode ? (
+                    <Link
+                      href={`/vault/subject/${card.subjectCode.toLowerCase()}`}
+                      className="px-4 py-2 bg-white/10 hover:bg-[#c79e4d] text-white hover:text-[#0b1510] border border-white/25 hover:border-[#c79e4d] rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-xs flex items-center gap-1.5 backdrop-blur-xs"
+                    >
+                      <span>{card.actionText}</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        if (card.category === "LOSTFOUND") {
+                          if (!profile) {
+                            onOpenLoginModal?.();
+                            return;
+                          }
+                          setSelectedClaimItem(card.rawItem);
+                        } else if (card.category === "NOTICES") {
+                          if (!profile) {
+                            onOpenLoginModal?.();
+                            return;
+                          }
+                          setSelectedNotice(card.rawItem);
+                        } else if (card.category === "VAULT") {
+                          if (!profile) {
+                            onOpenLoginModal?.();
+                            return;
+                          }
+                          setSelectedVaultItem(card.rawItem);
+                        } else if (card.category === "MARKETPLACE") {
+                          if (!profile) {
+                            onOpenLoginModal?.();
+                            return;
+                          }
+                          showToast(`Contacting seller (${card.rawItem.sellerMaskedId}) for in-person campus canteen exchange.`);
                         }
-                        setSelectedClaimItem(card.rawItem);
-                      } else if (card.category === "NOTICES") {
-                        if (!profile) {
-                          onOpenLoginModal?.();
-                          return;
-                        }
-                        setSelectedNotice(card.rawItem);
-                      } else if (card.category === "VAULT") {
-                        if (!profile) {
-                          onOpenLoginModal?.();
-                          return;
-                        }
-                        setSelectedVaultItem(card.rawItem);
-                      } else if (card.category === "MARKETPLACE") {
-                        if (!profile) {
-                          onOpenLoginModal?.();
-                          return;
-                        }
-                        showToast(`Contacting seller (${card.rawItem.sellerMaskedId}) for in-person campus canteen exchange.`);
-                      }
-                    }}
-                    className="px-4 py-2 bg-white/10 hover:bg-[#c79e4d] text-white hover:text-[#0b1510] border border-white/25 hover:border-[#c79e4d] rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-xs flex items-center gap-1.5 backdrop-blur-xs"
-                  >
-                    <span>{card.actionText}</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
+                      }}
+                      className="px-4 py-2 bg-white/10 hover:bg-[#c79e4d] text-white hover:text-[#0b1510] border border-white/25 hover:border-[#c79e4d] rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-xs flex items-center gap-1.5 backdrop-blur-xs"
+                    >
+                      <span>{card.actionText}</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
               </div>
             </ScrollReveal>
@@ -615,6 +842,20 @@ export default function CampusExplorer({
           <span>{toastMessage}</span>
         </div>
       )}
+
+      {/* Lost & Found Creation Modal */}
+      <LostFoundModal
+        isOpen={isLostFoundModalOpen}
+        onClose={() => setIsLostFoundModalOpen(false)}
+        onItemAdded={(item) => showToast(`Reported ${item.itemName} (${item.category}) to campus registry.`)}
+      />
+
+      {/* Marketplace Listing Modal */}
+      <MarketplaceModal
+        isOpen={isMarketplaceModalOpen}
+        onClose={() => setIsMarketplaceModalOpen(false)}
+        onItemAdded={(item) => showToast(`Listed "${item.title}" for ₹${item.price} in campus marketplace.`)}
+      />
 
     </section>
   );

@@ -52,10 +52,10 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
       badge: "0 PYQs",
       submenu: [
         { title: "Computer Science (CSE)", desc: "CS301 - CS802 Past Papers & Notes", code: "CSE", url: "/vault/cse" },
-        { title: "Electronics & Comm (ECE)", desc: "Analog, VLSI, DSP Archives", code: "ECE", url: "/vault" },
-        { title: "Electrical Engineering (EE)", desc: "Machines, Power Systems, Signals", code: "EE", url: "/vault" },
-        { title: "Mechanical Engineering (ME)", desc: "Thermodynamics, Fluid, Drafters", code: "ME", url: "/vault" },
-        { title: "Information Tech (IT)", desc: "DBMS, Web Tech, Networks", code: "IT", url: "/vault" },
+        { title: "Electronics & Comm (ECE)", desc: "Analog, VLSI, DSP Archives", code: "ECE", url: "/vault/ece" },
+        { title: "Electrical Engineering (EE)", desc: "Machines, Power Systems, Signals", code: "EE", url: "/vault/ee" },
+        { title: "Mechanical Engineering (ME)", desc: "Thermodynamics, Fluid, Drafters", code: "ME", url: "/vault/me" },
+        { title: "Information Tech (IT)", desc: "DBMS, Web Tech, Networks", code: "IT", url: "/vault/it" },
       ],
     },
     {
