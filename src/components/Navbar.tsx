@@ -18,6 +18,7 @@ import {
   User as UserIcon,
   CheckCircle2,
   FolderUp,
+  HelpCircle,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -30,6 +31,18 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Prevent background scrolling when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -49,7 +62,8 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
     {
       name: "The Vault",
       href: "/vault",
-      badge: "0 PYQs",
+      badge: "PYQs & Notes",
+      icon: BookOpen,
       submenu: [
         { title: "Computer Science (CSE)", desc: "CS301 - CS802 Past Papers & Notes", code: "CSE", url: "/vault/cse" },
         { title: "Electronics & Comm (ECE)", desc: "Analog, VLSI, DSP Archives", code: "ECE", url: "/vault/ece" },
@@ -62,6 +76,7 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
       name: "The Board",
       href: "/board/notic",
       badge: "Circulars",
+      icon: Bell,
       submenu: [
         { title: "Official T&P Circulars", desc: "Campus recruitment & internship drives", icon: Bell, url: "/board/notic" },
         { title: "Lost & Found AI Handover", desc: "Private recovery with zero phone exposure", icon: ShieldCheck, url: "/board/lost" },
@@ -72,6 +87,7 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
       name: "Marketplace",
       href: "/marketplace",
       badge: "0% Fee",
+      icon: ShoppingBag,
       submenu: [
         { title: "Engineering Drafters & Tools", desc: "Mini-drafters, compasses, scales" },
         { title: "MAKAUT Academic Textbooks", desc: "Standard reference books by semester" },
@@ -81,6 +97,7 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
     {
       name: "Guilds & Clubs",
       href: "/community",
+      icon: Users,
       submenu: [
         { title: "Developers Community (DC KGEC)", desc: "Open Source, Hackathons & Nexus Guild", code: "TECH" },
         { title: "Robotics & Automation Society", desc: "IoT, Combat Robots, Drones & Hardware", code: "ROBO" },
@@ -91,6 +108,7 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
     {
       name: "Network",
       href: "/profile",
+      icon: Sparkles,
       submenu: [
         { title: "Student Network & Directory", desc: "Connect with classmates, batchmates & alumni", code: "NETWORK", url: "/profile?tab=network" },
         { title: "Direct Peer Messages", desc: "Encrypted campus chat with project squads", code: "CHAT", url: "/messages" },
@@ -100,13 +118,30 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
     {
       name: "FAQ",
       href: "/#faq",
+      icon: HelpCircle,
     },
   ];
 
   return (
-    <div className="fixed top-3 sm:top-5 left-1/2 -translate-x-1/2 w-[94%] max-w-7xl z-50">
-      {/* Floating Transparent Navbar with Rounded Edges */}
-      <header className="bg-[#070e0a]/50 backdrop-blur-xl border border-white/20 sm:border-[#c79e4d]/35 rounded-full px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 shadow-[0_8px_32px_0_rgba(0,0,0,0.45)] transition-all duration-300">
+    <>
+      {/* Mobile Backdrop Overlay - Dims and blurs background when mobile menu is open */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/85 backdrop-blur-md z-40 lg:hidden transition-opacity duration-300"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      <div className="fixed top-3 sm:top-5 left-1/2 -translate-x-1/2 w-[94%] max-w-7xl z-50">
+        {/* Floating Navbar - switches from sleek pill to luxury modal on mobile when open */}
+        <header
+          className={`transition-all duration-300 ${
+            mobileMenuOpen
+              ? "bg-[#070e0a]/98 backdrop-blur-2xl border border-[#c79e4d]/45 rounded-3xl p-4 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.9)] max-h-[88vh] overflow-y-auto"
+              : "bg-[#070e0a]/60 backdrop-blur-xl border border-white/20 sm:border-[#c79e4d]/35 rounded-full px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 shadow-[0_8px_32px_0_rgba(0,0,0,0.45)]"
+          }`}
+        >
         <div className="flex items-center justify-between gap-4">
           
           {/* Brand Logo with Crest */}
@@ -333,44 +368,63 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
             {profile ? (
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-white/10 rounded-full border border-white/20 text-[#deb86d] text-[11px] font-medium"
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-white/10 hover:bg-white/15 rounded-full border border-white/20 text-[#deb86d] text-[11px] font-medium transition-colors"
               >
-                <div className="w-4 h-4 rounded-full bg-[#deb86d] text-[#08120c] text-[8px] font-bold flex items-center justify-center">
-                  {profile.avatarText}
-                </div>
-                <span className="max-w-[60px] truncate">{profile.name.split(" ")[0]}</span>
+                {profile.avatarUrl ? (
+                  <img
+                    src={profile.avatarUrl}
+                    alt={profile.name}
+                    className="w-4 h-4 rounded-full object-cover ring-1 ring-[#deb86d]/50"
+                  />
+                ) : (
+                  <div className="w-4 h-4 rounded-full bg-[#deb86d] text-[#08120c] text-[8px] font-bold flex items-center justify-center">
+                    {profile.avatarText}
+                  </div>
+                )}
+                <span className="max-w-[70px] truncate">{profile.name.split(" ")[0]}</span>
               </button>
             ) : (
               <button
                 onClick={onOpenLoginModal}
-                className="px-3 py-1.5 bg-[#c79e4d] text-[#08120c] text-[10px] font-bold uppercase rounded-full"
+                className="px-3 py-1.5 bg-gradient-to-r from-[#dfc285] to-[#c79e4d] text-[#08120c] text-[10px] font-bold uppercase rounded-full shadow-sm"
               >
                 Sign In
               </button>
             )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 text-white hover:text-[#deb86d] transition-colors focus:outline-none"
+              className="p-1.5 sm:p-2 text-white hover:text-[#deb86d] bg-white/5 hover:bg-white/10 rounded-full border border-white/15 transition-all focus:outline-none"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 text-[#deb86d]" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Drawer Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden mt-3 pt-3 border-t border-white/15 px-2 py-4 space-y-3">
+          <div className="lg:hidden mt-4 pt-4 border-t border-[#c79e4d]/25 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
             {/* Student Session Card in Mobile if Logged In */}
-            {profile && (
-              <div className="p-3 bg-[#0d1c14] border border-[#223d2e] rounded-xl flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-[#c79e4d] text-[#08120c] font-bold text-xs flex items-center justify-center shrink-0">
-                    {profile.avatarText}
-                  </div>
+            {profile ? (
+              <div className="p-3.5 bg-[#0a1811] border border-[#234230] rounded-2xl flex items-center justify-between shadow-lg">
+                <div className="flex items-center gap-3">
+                  {profile.avatarUrl ? (
+                    <img
+                      src={profile.avatarUrl}
+                      alt={profile.name}
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-[#deb86d]/60 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#dfc285] to-[#c79e4d] text-[#08120c] font-bold text-sm flex items-center justify-center shrink-0 shadow-md">
+                      {profile.avatarText}
+                    </div>
+                  )}
                   <div>
-                    <div className="text-xs font-bold text-white">{profile.name}</div>
-                    <div className="text-[10px] font-mono text-[#a4b8ab]">
+                    <div className="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span>{profile.name}</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    </div>
+                    <div className="text-[11px] font-mono text-[#a4b8ab] mt-0.5">
                       {profile.rollNumber} • {profile.department}
                     </div>
                   </div>
@@ -380,40 +434,67 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
                     setMobileMenuOpen(false);
                     await logout();
                   }}
-                  className="p-1.5 text-red-400 hover:text-red-300"
+                  className="p-2 text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded-xl transition-colors"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
               </div>
+            ) : (
+              <div className="p-3.5 bg-[#0a1811] border border-[#c79e4d]/30 rounded-2xl flex items-center justify-between shadow-md">
+                <div>
+                  <div className="text-xs font-bold text-white uppercase tracking-wider">KGEC Intranet</div>
+                  <div className="text-[11px] text-[#9db2a4] mt-0.5">Sign in to access verified collegiate services</div>
+                </div>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (onOpenLoginModal) onOpenLoginModal();
+                  }}
+                  className="px-3.5 py-1.5 bg-gradient-to-r from-[#dfc285] to-[#c79e4d] text-[#08120c] text-[11px] font-bold uppercase rounded-full shadow-md"
+                >
+                  Sign In
+                </button>
+              </div>
             )}
 
+            {/* Navigation Links with Icons and Clean Touch Targets */}
             <div className="space-y-1">
-              {navLinks.map((link) => (
-                <div key={link.name} className="border-b border-white/10 pb-1.5">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                return (
                   <Link
+                    key={link.name}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between text-xs font-medium text-white hover:text-[#deb86d] py-1"
+                    className="flex items-center justify-between p-2.5 rounded-xl text-xs font-medium text-[#e4ede7] hover:text-[#deb86d] hover:bg-white/5 active:bg-white/10 transition-colors group"
                   >
-                    <span>{link.name}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 group-hover:border-[#c79e4d]/40 flex items-center justify-center text-[#deb86d] shrink-0 transition-colors">
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span className="text-sm font-medium text-white group-hover:text-[#deb86d] transition-colors">
+                        {link.name}
+                      </span>
+                    </div>
                     {link.badge && (
-                      <span className="text-[9px] px-2 py-0.5 bg-[#172b20] text-[#deb86d] font-mono rounded-full border border-[#254231]">
+                      <span className="text-[10px] px-2 py-0.5 bg-[#172b20] text-[#deb86d] font-mono rounded-full border border-[#254231]">
                         {link.badge}
                       </span>
                     )}
                   </Link>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            <div className="pt-2 space-y-2">
+            {/* Quick Action Buttons */}
+            <div className="pt-2 border-t border-white/10 grid grid-cols-2 gap-2.5">
               <Link
                 href="/messages"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2 bg-white/10 hover:bg-white/15 text-[#deb86d] text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2 rounded-full border border-white/10"
+                className="py-2.5 px-3 bg-white/5 hover:bg-white/10 active:bg-white/15 text-[#deb86d] text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2 rounded-xl border border-white/10 transition-colors shadow-sm"
               >
-                <MessageSquare className="w-3.5 h-3.5 text-[#c79e4d]" />
+                <MessageSquare className="w-4 h-4 text-[#c79e4d]" />
                 <span>Messages</span>
               </Link>
 
@@ -421,10 +502,10 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
                 <Link
                   href="/profile"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-2 bg-white/10 hover:bg-white/15 text-[#e0ece4] text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2 rounded-full border border-white/10"
+                  className="py-2.5 px-3 bg-white/10 hover:bg-white/15 active:bg-white/20 text-[#e0ece4] text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2 rounded-xl border border-white/15 transition-colors shadow-sm"
                 >
-                  <UserIcon className="w-3.5 h-3.5 text-[#deb86d]" />
-                  <span>View Intranet Profile</span>
+                  <UserIcon className="w-4 h-4 text-[#deb86d]" />
+                  <span>Profile</span>
                 </Link>
               ) : (
                 <button
@@ -432,10 +513,10 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
                     setMobileMenuOpen(false);
                     if (onOpenLoginModal) onOpenLoginModal();
                   }}
-                  className="w-full py-2.5 bg-gradient-to-r from-[#dfc285] via-[#c79e4d] to-[#b3853b] text-[#08120c] text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2 rounded-full shadow-md"
+                  className="py-2.5 px-3 bg-gradient-to-r from-[#dfc285] to-[#c79e4d] text-[#08120c] text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-1.5 rounded-xl shadow-md"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Authenticate Roll Number</span>
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Roll Verify</span>
                 </button>
               )}
             </div>
@@ -443,5 +524,6 @@ export default function Navbar({ onOpenLoginModal }: NavbarProps) {
         )}
       </header>
     </div>
-  );
+  </>
+);
 }
