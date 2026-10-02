@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { CheckCircle2, GraduationCap, ShieldCheck, X } from "lucide-react";
 
+import { useAuth } from "@/context/AuthContext";
+
 interface VerificationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -10,17 +12,37 @@ interface VerificationModalProps {
 }
 
 export default function VerificationModal({ isOpen, onClose, onVerified }: VerificationModalProps) {
+  const { user } = useAuth();
   const [fullName, setFullName] = useState("");
   const [rollNumber, setRollNumber] = useState("");
   const [college, setCollege] = useState("Kalyani Government Engineering College");
   const [department, setDepartment] = useState("CSE");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
-  const submit = (event: React.FormEvent) => {
+  const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!fullName.trim() || !rollNumber.trim() || !college.trim()) return;
+    setSubmitting(true);
+    try {
+      await fetch("/api/user/verify-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user?.id,
+          fullName: fullName.trim(),
+          rollNumber: rollNumber.trim(),
+          college: college.trim(),
+          department,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to submit verification request:", err);
+    } finally {
+      setSubmitting(false);
+    }
     setSubmitted(true);
     onVerified();
   };

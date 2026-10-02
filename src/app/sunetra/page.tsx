@@ -110,6 +110,23 @@ export default function SunetraAdminPage() {
     }
   };
 
+  const fetchVerifications = async () => {
+    try {
+      const response = await fetch("/api/admin/verifications", {
+        headers: {
+          "x-admin-key": "sunetra2026",
+          Authorization: "Bearer sunetra2026",
+        },
+      });
+      const result = await response.json();
+      if (result.success && result.data) {
+        setVerifications(result.data);
+      }
+    } catch (err) {
+      console.error("Failed to load verifications:", err);
+    }
+  };
+
   useEffect(() => {
     const syncNotices = () => setNotices(getStoredNotices());
     window.addEventListener("nexus_storage_updated", syncNotices);
@@ -139,6 +156,7 @@ export default function SunetraAdminPage() {
       .catch(() => undefined);
 
     fetchStudents();
+    fetchVerifications();
   }, [isAdmin]);
 
   const handleLogin = async (event: FormEvent) => {
@@ -235,9 +253,28 @@ export default function SunetraAdminPage() {
     setToast(`Upload ${status.toLowerCase()}.`);
   };
 
-  const updateVerification = (id: string, status: PendingVerification["status"]) => {
-    setVerifications((current) => current.map((item) => (item.id === id ? { ...item, status } : item)));
-    setToast(`Verification ${status.toLowerCase()}.`);
+  const updateVerification = async (id: string, status: PendingVerification["status"]) => {
+    try {
+      const response = await fetch("/api/admin/verifications", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": "sunetra2026",
+          Authorization: "Bearer sunetra2026",
+        },
+        body: JSON.stringify({ id, status }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setVerifications((current) => current.map((item) => (item.id === id ? { ...item, status } : item)));
+        setToast(`Student verification ${status.toLowerCase()} and saved to database.`);
+        fetchStudents();
+      } else {
+        setToast(`Failed to update verification: ${result.error}`);
+      }
+    } catch (err: any) {
+      setToast(`Error: ${err.message}`);
+    }
   };
 
   if (loading) {

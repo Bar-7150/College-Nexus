@@ -43,11 +43,13 @@ export interface RegisteredStudent {
   branch: string;
   rollNumber: string;
   batchYear: string;
+  avatarUrl?: string;
   joiningDate: string;
   lastActive: string;
   visitCount: number;
   role: string;
   isVerified: boolean;
+  verificationStatus?: string;
   source: string;
   uploadedDocsCount: number;
   uploadedDocuments: StudentDocument[];
@@ -622,9 +624,13 @@ export default function RegisteredStudentsSection({
                   {/* 1. Student Identity */}
                   <div className="flex items-center gap-3 min-w-0">
                     <div
-                      className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${avatarGrad} text-sm font-bold text-white shadow-md border border-white/20`}
+                      className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${avatarGrad} text-sm font-bold text-white shadow-md border border-white/20 overflow-hidden`}
                     >
-                      {initials}
+                      {student.avatarUrl ? (
+                        <img src={student.avatarUrl} alt={student.name} className="h-full w-full object-cover" />
+                      ) : (
+                        initials
+                      )}
                       {student.isVerified && (
                         <span
                           className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-white shadow"
@@ -814,14 +820,18 @@ export default function RegisteredStudentsSection({
                 <div
                   className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${getBranchAvatarGradient(
                     inspectStudent.branch
-                  )} font-bold text-white shadow-md border border-white/20`}
+                  )} font-bold text-white shadow-md border border-white/20 overflow-hidden shrink-0`}
                 >
-                  {inspectStudent.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()}
+                  {inspectStudent.avatarUrl ? (
+                    <img src={inspectStudent.avatarUrl} alt={inspectStudent.name} className="h-full w-full object-cover" />
+                  ) : (
+                    inspectStudent.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .slice(0, 2)
+                      .toUpperCase()
+                  )}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { StudentProfile, JobStatusInfo } from "@/data/profileData";
 import {
   ShieldCheck,
@@ -21,7 +21,10 @@ import {
   Bookmark,
   Award,
   BadgeCheck,
+  Camera,
+  Loader2,
 } from "lucide-react";
+import { uploadToCloudinary } from "@/lib/uploadService";
 
 interface ProfileHeaderProps {
   profile: StudentProfile;
@@ -33,6 +36,7 @@ interface ProfileHeaderProps {
   onShareProfileClick: () => void;
   isInstitutionVerified?: boolean;
   onOpenVerificationClick?: () => void;
+  onAvatarUpload?: (url: string) => void;
 }
 
 export default function ProfileHeader({
@@ -45,9 +49,28 @@ export default function ProfileHeader({
   onShareProfileClick,
   isInstitutionVerified = false,
   onOpenVerificationClick,
+  onAvatarUpload,
 }: ProfileHeaderProps) {
   const [openToDropdownOpen, setOpenToDropdownOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !onAvatarUpload) return;
+    setIsUploadingAvatar(true);
+    try {
+      const res = await uploadToCloudinary(file, { folder: "college-nexus/profiles" });
+      if (res.success && res.data?.secure_url) {
+        onAvatarUpload(res.data.secure_url);
+      }
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   const getStatusBadge = (status: JobStatusInfo["status"]) => {
     switch (status) {
@@ -129,13 +152,39 @@ export default function ProfileHeader({
           {/* Avatar with Open to Work ring */}
           <div className="relative inline-block self-start">
             <div
-              className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-br ${profile.avatarBg} text-white font-bold text-3xl sm:text-4xl flex items-center justify-center shadow-2xl border-4 border-[#070e0a]/80 ring-2 ring-[#c79e4d]/70 relative z-10 transition-transform hover:scale-105 select-none`}
+              className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-br ${profile.avatarBg} text-white font-bold text-3xl sm:text-4xl flex items-center justify-center shadow-2xl border-4 border-[#070e0a]/80 ring-2 ring-[#c79e4d]/70 relative z-10 select-none overflow-hidden`}
             >
               {profile.avatarUrl ? <img src={profile.avatarUrl} alt={`${profile.name} profile`} className="h-full w-full rounded-full object-cover" /> : profile.avatarText}
 
               {/* Online pulse dot */}
               <span className="absolute bottom-2 right-2 w-4 h-4 bg-emerald-400 border-2 border-[#070e0a] rounded-full"></span>
             </div>
+
+            {/* Direct Camera Button on Avatar for Student Photo Upload */}
+            {isSelf && (
+              <>
+                <input
+                  type="file"
+                  ref={avatarInputRef}
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={handleAvatarFile}
+                />
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={isUploadingAvatar}
+                  className="absolute bottom-1 right-1 z-20 p-2 rounded-full bg-[#070e0a] border-2 border-[#deb86d] text-[#deb86d] hover:bg-[#c79e4d] hover:text-[#08120c] transition-all shadow-xl cursor-pointer disabled:opacity-50"
+                  title="Upload profile picture to Cloudinary"
+                >
+                  {isUploadingAvatar ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Camera className="w-3.5 h-3.5" />
+                  )}
+                </button>
+              </>
+            )}
 
             {/* Open to Work Frame Badge */}
             {profile.jobStatus.isOpenToWork && (

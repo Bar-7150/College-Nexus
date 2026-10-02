@@ -109,13 +109,14 @@ export default function ProfilePage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const { profile: authUser } = useAuth();
+  const { profile: authUser, user: supabaseUser } = useAuth();
 
   const rawCurrentUser =
     profiles.find((p) => p.id === currentUserId) || profiles[0] || createEmptyProfile();
   const currentLoggedInUser: StudentProfile = authUser
     ? {
         ...rawCurrentUser,
+        id: supabaseUser?.id || authUser.id || rawCurrentUser.id,
         name: authUser.name,
         rollNumber: authUser.rollNumber,
         department: (["CSE", "ECE", "EE", "ME", "IT"].includes(authUser.department)
@@ -123,6 +124,7 @@ export default function ProfilePage() {
           : rawCurrentUser.department) as any,
         batchYear: authUser.batchYear || rawCurrentUser.batchYear,
         avatarText: authUser.avatarText || rawCurrentUser.avatarText,
+        avatarUrl: authUser.avatarUrl || rawCurrentUser.avatarUrl,
       }
     : rawCurrentUser;
 
@@ -375,13 +377,41 @@ export default function ProfilePage() {
   };
 
   // Update Profile details
-  const handleSaveProfile = (updated: Partial<StudentProfile>) => {
+  // Update Profile details
+  const handleSaveProfile = async (updated: Partial<StudentProfile>) => {
     setProfiles((prev) =>
       prev.some((p) => p.id === activeProfile.id)
-        ? prev.map((p) => p.id === activeProfile.id ? { ...p, ...updated } : p)
+        ? prev.map((p) => (p.id === activeProfile.id ? { ...p, ...updated } : p))
         : [...prev, { ...activeProfile, ...updated }]
     );
-    showToast("Profile details updated successfully!");
+
+    try {
+      const targetUserId = supabaseUser?.id || authUser?.id || activeProfile.id;
+      const res = await fetch("/api/user/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: targetUserId,
+          avatarUrl: updated.avatarUrl,
+          fullName: updated.name,
+          pronouns: updated.pronouns,
+          headline: updated.headline,
+          location: updated.location,
+          about: updated.about,
+          department: updated.department,
+          batchYear: updated.batchYear,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("Profile & Cloudinary photo saved to database! ✨");
+      } else {
+        showToast("Profile details updated locally.");
+      }
+    } catch (err: any) {
+      console.error("Save profile error:", err);
+      showToast("Profile details updated locally.");
+    }
   };
 
   return (
@@ -531,6 +561,7 @@ export default function ProfilePage() {
                 }}
                 isInstitutionVerified={verifiedProfileIds.includes(activeProfile.id)}
                 onOpenVerificationClick={() => setVerificationModalOpen(true)}
+                onAvatarUpload={(url) => handleSaveProfile({ avatarUrl: url })}
               />
 
               {/* About Section */}
