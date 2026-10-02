@@ -90,11 +90,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const supabase = createClient();
 
+    const trackUserVisit = (userId?: string) => {
+      if (typeof window === "undefined" || !userId) return;
+      const sessionKey = `nexus_tracked_visit_${userId}`;
+      if (sessionStorage.getItem(sessionKey)) return;
+      sessionStorage.setItem(sessionKey, "true");
+      fetch("/api/user/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      }).catch(() => undefined);
+    };
+
     // Check initial session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setProfile(extractProfile(currentSession?.user ?? null));
+      if (currentSession?.user?.id) {
+        trackUserVisit(currentSession.user.id);
+      }
       setLoading(false);
     });
 
@@ -105,6 +120,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(newSession);
       setUser(newSession?.user ?? null);
       setProfile(extractProfile(newSession?.user ?? null));
+      if (newSession?.user?.id) {
+        trackUserVisit(newSession.user.id);
+      }
       setLoading(false);
     });
 

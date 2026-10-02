@@ -25,6 +25,10 @@ import {
   saveNotice,
   deleteNotice,
 } from "@/lib/subjectStore";
+import RegisteredStudentsSection, {
+  RegisteredStudent,
+  StudentStats,
+} from "@/components/admin/RegisteredStudentsSection";
 
 const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "sunetrabar@gmail.com";
 type AdminTab = "overview" | "notices" | "vault" | "verification" | "users" | "moderation";
@@ -59,6 +63,11 @@ export default function SunetraAdminPage() {
   const [uploads, setUploads] = useState<PendingUpload[]>([]);
   const [verifications, setVerifications] = useState<PendingVerification[]>([]);
 
+  // Registered students state
+  const [students, setStudents] = useState<RegisteredStudent[]>([]);
+  const [studentStats, setStudentStats] = useState<StudentStats | null>(null);
+  const [isLoadingStudents, setIsLoadingStudents] = useState<boolean>(false);
+
   // Session state for dev or master admin access
   const [devAdminSession, setDevAdminSession] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
@@ -80,6 +89,27 @@ export default function SunetraAdminPage() {
 
   const isAdmin = devAdminSession || user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
+  const fetchStudents = async () => {
+    setIsLoadingStudents(true);
+    try {
+      const response = await fetch("/api/admin/users", {
+        headers: {
+          "x-admin-key": "sunetra2026",
+          Authorization: "Bearer sunetra2026",
+        },
+      });
+      const result = await response.json();
+      if (result.success && result.data) {
+        setStudents(result.data.users || []);
+        setStudentStats(result.data.stats || null);
+      }
+    } catch (err) {
+      console.error("Failed to load registered students:", err);
+    } finally {
+      setIsLoadingStudents(false);
+    }
+  };
+
   useEffect(() => {
     const syncNotices = () => setNotices(getStoredNotices());
     window.addEventListener("nexus_storage_updated", syncNotices);
@@ -88,7 +118,12 @@ export default function SunetraAdminPage() {
 
   useEffect(() => {
     if (!isAdmin) return;
-    fetch("/api/admin/vault/resources")
+    fetch("/api/admin/vault/resources", {
+      headers: {
+        "x-admin-key": "sunetra2026",
+        Authorization: "Bearer sunetra2026",
+      },
+    })
       .then((response) => response.json())
       .then((result) => {
         if (!result.success) return;
@@ -102,6 +137,8 @@ export default function SunetraAdminPage() {
         })));
       })
       .catch(() => undefined);
+
+    fetchStudents();
   }, [isAdmin]);
 
   const handleLogin = async (event: FormEvent) => {
@@ -300,7 +337,7 @@ export default function SunetraAdminPage() {
     { id: "notices", label: "Campus Notices", icon: Bell, badge: notices.length },
     { id: "vault", label: "Vault Approvals", icon: FileCheck2, badge: uploads.filter((u) => u.status === "Pending").length },
     { id: "verification", label: "Student Verification", icon: BadgeCheck, badge: verifications.filter((v) => v.status === "Pending").length },
-    { id: "users", label: "Users", icon: Users },
+    { id: "users", label: "Users", icon: Users, badge: students.length },
     { id: "moderation", label: "Moderation", icon: ShieldAlert },
   ];
 
@@ -364,6 +401,7 @@ export default function SunetraAdminPage() {
                 verifications={verifications}
                 noticesCount={notices.length}
                 onOpen={setActiveTab}
+                totalStudents={students.length}
               />
             )}
 
@@ -603,7 +641,13 @@ export default function SunetraAdminPage() {
             )}
 
             {activeTab === "users" && (
-              <Queue title="Registered users" empty="User records will appear here from Supabase profiles." icon={<Users className="h-5 w-5" />} />
+              <RegisteredStudentsSection
+                students={students}
+                stats={studentStats}
+                isLoading={isLoadingStudents}
+                onRefresh={fetchStudents}
+                onToast={setToast}
+              />
             )}
 
             {activeTab === "moderation" && (
@@ -630,17 +674,19 @@ function OverviewCard({
   verifications,
   noticesCount,
   onOpen,
+  totalStudents,
 }: {
   uploads: PendingUpload[];
   verifications: PendingVerification[];
   noticesCount: number;
   onOpen: (tab: AdminTab) => void;
+  totalStudents: number;
 }) {
   const metrics = [
     { label: "Active campus notices", value: String(noticesCount), icon: Bell },
     { label: "Pending uploads", value: String(uploads.filter((item) => item.status === "Pending").length), icon: FileCheck2 },
     { label: "Verification requests", value: String(verifications.filter((item) => item.status === "Pending").length), icon: BadgeCheck },
-    { label: "Registered users", value: "0", icon: Users },
+    { label: "Registered students", value: String(totalStudents), icon: Users },
   ];
 
   return (
@@ -649,7 +695,7 @@ function OverviewCard({
         <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#deb86d]">ADMINISTRATIVE OVERVIEW</div>
         <h2 className="mt-1 font-serif text-4xl text-white">Everything in one place.</h2>
         <p className="mt-2 max-w-2xl text-sm text-[#9db2a4]">
-          Publish campus circulars, approve academic resources, review student verification requests, and moderate campus activity.
+          Publish campus circulars, approve academic resources, review student verification requests, and monitor registered student cohorts.
         </p>
       </div>
 
@@ -663,7 +709,7 @@ function OverviewCard({
         ))}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <button
           onClick={() => onOpen("notices")}
           className="rounded-xl border border-[#38513f] bg-[#0b1710]/80 p-5 text-left hover:border-[#deb86d] transition-all cursor-pointer group"
@@ -689,8 +735,17 @@ function OverviewCard({
           className="rounded-xl border border-[#38513f] bg-[#0b1710]/80 p-5 text-left hover:border-[#deb86d] transition-all cursor-pointer group"
         >
           <BadgeCheck className="mb-3 h-5 w-5 text-[#deb86d] group-hover:scale-110 transition-transform" />
-          <h3 className="font-serif text-xl text-white">Review student identity</h3>
+          <h3 className="font-serif text-xl text-white">Student identity</h3>
           <p className="mt-1 text-xs text-[#9bb2a0]">Check roll, college, department, and name before awarding a Verified tag.</p>
+        </button>
+
+        <button
+          onClick={() => onOpen("users")}
+          className="rounded-xl border border-[#38513f] bg-[#0b1710]/80 p-5 text-left hover:border-[#deb86d] transition-all cursor-pointer group"
+        >
+          <Users className="mb-3 h-5 w-5 text-[#deb86d] group-hover:scale-110 transition-transform" />
+          <h3 className="font-serif text-xl text-white">Registered Students</h3>
+          <p className="mt-1 text-xs text-[#9bb2a0]">Inspect student branches, roll numbers, uploaded documents, and visit metrics.</p>
         </button>
       </div>
     </div>
