@@ -11,7 +11,7 @@
 
 | Desktop | Mobile |
 |---|---|
-| ![desktop](./screenshots/desktop.png) | ![mobile](./screenshots/mobile.png) |
+| ![desktop](./screenshots/desktop_view.png) | ![mobile](./screenshots/mobile_view.jpeg) |
 
 ---
 
