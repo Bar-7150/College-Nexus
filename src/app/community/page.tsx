@@ -67,16 +67,18 @@ function CommunityPageContent() {
   useEffect(() => {
     let mounted = true;
     const loadEnrollmentCount = async () => {
-      const supabase = createClient();
-      const { count } = await supabase
-        .from("profiles")
-        .select("id", { count: "exact", head: true });
-      if (mounted) setEnrolledCount(count ?? 0);
+      try {
+        const res = await fetch("/api/stats");
+        const data = await res.json();
+        if (mounted && data.success) {
+          setEnrolledCount(data.userCount ?? 0);
+        }
+      } catch {
+        if (mounted) setEnrolledCount(0);
+      }
     };
 
-    loadEnrollmentCount().catch(() => {
-      if (mounted) setEnrolledCount(0);
-    });
+    loadEnrollmentCount();
 
     return () => {
       mounted = false;

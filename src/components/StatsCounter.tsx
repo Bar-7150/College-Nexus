@@ -5,41 +5,55 @@ import { Users, GraduationCap, FileCheck, Banknote } from "lucide-react";
 
 export default function StatsCounter() {
   const [visitCount, setVisitCount] = useState(0);
+  const [dbStats, setDbStats] = useState({ userCount: 0, vaultCount: 0, departmentCount: 6 });
 
   useEffect(() => {
     const key = "nexus_visit_count";
     const nextCount = Number(window.localStorage.getItem(key) || "0") + 1;
     window.localStorage.setItem(key, String(nextCount));
     setVisitCount(nextCount);
+
+    fetch("/api/stats")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setDbStats({
+            userCount: data.userCount ?? 0,
+            vaultCount: data.vaultCount ?? 0,
+            departmentCount: data.departmentCount ?? 6,
+          });
+        }
+      })
+      .catch((err) => console.error("Error fetching stats:", err));
   }, []);
 
   const stats = [
     {
       star: null,
-      value: String(visitCount),
-      label: "CAMPUS VISITS",
-      subtext: "Visits recorded on this browser",
+      value: String(dbStats.userCount),
+      label: "REGISTERED KGECIANS",
+      subtext: "Roll Authenticated Profiles",
       icon: Users,
     },
     {
       star: null,
-      value: "0",
+      value: String(dbStats.departmentCount),
       label: "ACADEMIC DEPARTMENTS",
       subtext: "CSE, ECE, EE, ME, IT & M.Tech",
       icon: GraduationCap,
     },
     {
       star: null,
-      value: "0",
+      value: String(dbStats.vaultCount),
       label: "ARCHIVED PYQS & NOTES",
       subtext: "Cryptographic SHA-256 Validated",
       icon: FileCheck,
     },
     {
       star: null,
-      value: "0",
-      label: "STUDENT SAVINGS",
-      subtext: "0% Commission Equipment Exchange",
+      value: String(visitCount),
+      label: "CAMPUS VISITS",
+      subtext: "Visits recorded on this browser",
       icon: Banknote,
     },
   ];

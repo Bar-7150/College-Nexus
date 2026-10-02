@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 import InstitutionMarks from "./InstitutionMarks";
@@ -10,6 +10,26 @@ interface HeroProps {
 }
 
 export default function Hero({ onOpenLoginModal }: HeroProps) {
+  const [stats, setStats] = useState({ userCount: 0, vaultCount: 0 });
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/stats")
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && data.success) {
+          setStats({
+            userCount: data.userCount ?? 0,
+            vaultCount: data.vaultCount ?? 0,
+          });
+        }
+      })
+      .catch((err) => console.error("Failed to fetch stats:", err));
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   return (
     <section
       id="hero"
@@ -83,7 +103,7 @@ export default function Hero({ onOpenLoginModal }: HeroProps) {
                   NETWORK NODES
                 </span>
                 <span className="text-sm font-semibold text-white block mt-0.5">
-                  0 KGECians
+                  {stats.userCount} KGECian{stats.userCount === 1 ? "" : "s"}
                 </span>
                 <span className="text-[11px] text-[#9db2a4]">Roll Authenticated</span>
               </div>
@@ -92,7 +112,7 @@ export default function Hero({ onOpenLoginModal }: HeroProps) {
                   ACADEMIC VAULT
                 </span>
                 <span className="text-sm font-semibold text-white block mt-0.5">
-                  0 Solved PYQs
+                  {stats.vaultCount} Solved PYQ{stats.vaultCount === 1 ? "" : "s"}
                 </span>
                 <span className="text-[11px] text-[#9db2a4]">SHA-256 Validated</span>
               </div>
